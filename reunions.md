@@ -8,4 +8,4 @@ lien du drive avec les ressources : https://drive.google.com/drive/folders/1Sa_B
 
 ## 20/03/23 
 
-mail à l'encadrante pour faire des retours sur nos avancées. elle souhaite une interface graphique évoluée
+mail à l'encadrante pour faire des retours sur nos avancées. elle souhaite une interface graphique évoluée.
