@@ -1,4 +1,5 @@
 /!\ NE PAS PUSH LA DATA DONC CREER UN FOLDER "data" ET LA METTRE DEDANS
+/!\ NE PAS COMMIT le cache de python s'il existe
 
 ## 10/03/23
 prise de contact avec l'encadrante. Présentation du sujet et des outils que nous allons utiliser.
