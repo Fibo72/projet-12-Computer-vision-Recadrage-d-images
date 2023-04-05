@@ -1,40 +1,53 @@
 from tkinter import ttk
+import tkinter as tk
 from tkinter.messagebox import showinfo
 
 #VARIABLES
-buttons_packing = [{"side":"left"}, {"side":"left"}, {"side":"left", "padx":(20,0)},
-                   {"side":"left"}, {"side":"left"}, {"side":"right","padx":(20,0)},
-                   {"side":"left", "padx":(20,0)}, {"side":"left"},{"side":"left"},]
+buttons_packing = [{"side":"top"}, {"side":"top"}, {"side":"top"},
+                   {"side":"top"}, {"side":"top"}, {"side":"top",  "pady" :20}, {"side":"top"}]
 
 
-buttons_style = [{"text":"Draw", "width":6}, {"text":"Drag", "width":6},
-                 {"text":'+', "width":3},
-                 {"text":'-', "width":3}, {"text":'Reset'}, { "text":'Clear'},
-                 {"text":'<', "width":3}, {"width":3, "justify":"center"},
-                 {"text":'>',"width":3}]
+buttons_style = [{"text":"Draw"}, {"text":"Drag"}, {"text":'+'},
+                 {"text":'-'}, {"text":'Reset'}, {"text":'Clear', "width": 5}, {"text":'Ruler'}]
 
-
+COLOR = ['#5669ff','#ff2c64','#42eb00']
 
 
 #Style
-def apply_style(master):
-    style = ttk.Style(master)
-    style.configure("TButton", bg='red')
+def configure(master: tk.Tk):
+    master.configure(bg="#dddddd")
+    master.state("zoomed")
+    master.title("Frame X")
 
 def style_them_all(button_list):
     for i,button in enumerate(button_list):
         button.configure(buttons_style[i])
+        button.configure(state="disabled")
 
 def pack_them_all(button_list):
     for i,button in enumerate(button_list):
         button.pack(buttons_packing[i])
+
 
 #popup box
 def show_pop_up(text):
     '''text : string to display'''
     showinfo("Error message", text)
 
-# All buttons options
 
-#draw_options = {'text' :'Draw', 'command' : self.draw_toggle}
-#drag_options = {'text' :'Draw', 'command' : self.drag_toggle}
+#check right file format
+
+FORMAT = ['.png', '.jpg', '.jpeg', '.dat']
+
+def check_file_format(file_name):
+    for ending in FORMAT:
+        if file_name.endswith(ending):
+            return True
+    return False
+
+#process scale rate
+
+def get_scale(h,w,canvas_h,canvas_w):
+    '''return scale rate'''
+    scale = [min(canvas_h/h[i], canvas_w/w[i]) for i in range(len(h))]
+    return scale
