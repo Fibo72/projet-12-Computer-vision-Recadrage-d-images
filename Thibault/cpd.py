@@ -2,7 +2,7 @@ import  pycpd as cpd
 
 # create a RigidRegistration object
 
-reg = RigidRegistration(X=target, Y=source)
+reg = cpd.RigidRegistration(X=target, Y=source)
 
 # run the registration & collect the results
 

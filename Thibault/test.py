@@ -54,21 +54,4 @@ pt_trd = trd[trd[:, :, 2] == 0.750]
 reg = cpd.RigidRegistration(X =  pt_r, Y = pt_fix )
 TY, (s_reg, R_reg, t_reg) = reg.register()
 
-R = np.zeros((4,4))
- 
-R[:-1,:-1] = R_reg
-R[:-1,-1] = t_reg
-R[-1,-1] = 1
-
-for k in range(3):
-    R[k, k] *= s_reg
-
-
-
-crop_r = scp.ndimage.affine_transform(r, R)
-
-grille = np.lexsort((crop_r[:,:,1], crop_r[:,:,0]))
-sorted_crop_r = crop_r[grille]
-
-plt.imshow(sorted_crop_r)
-plt.show()
+print(TY - pt_fix)
