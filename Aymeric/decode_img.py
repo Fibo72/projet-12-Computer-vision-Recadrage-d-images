@@ -114,5 +114,5 @@ def get_phase_img(path: str) -> np.ndarray:
 
 
 if (__name__ == '__main__'):
-    path = 'C:/Users/Aymeric/Desktop/Stage/Prog
+    path = 'C:/Users/Aymeric/Desktop/Stage/Prog'
 

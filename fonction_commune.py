@@ -136,28 +136,4 @@ def prof_topo(A,B, img):
 
 
 if  __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    path_dict = 'test/1_14__18_7.png'
-    
-    load_pic = plt.imread(path_dict)
-
-    data = prof_topo((1,14),(18,7), load_pic)
-    print(data[2])
-    plt.figure()
-    plt.plot(data[2])
-    plt.show()
-
-    plt.figure()
-    plt.imshow(load_pic)
-    plt.plot(data[0], data[1],'bx')
-    plt.show()
-
-    np.meshgrid(data[0], data[1])
-    img = np.zeros((20, 20,4))
-    i = 0
-    for y, k in zip(data[0], data[1]):
-        img[k,y] = data[2][i,:]
-        i+=1
-    plt.figure()
-    plt.imshow(img)
-    plt.show()
+    a = None
