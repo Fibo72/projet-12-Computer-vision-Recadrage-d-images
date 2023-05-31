@@ -40,6 +40,8 @@ r[:,:,2] =  img_r
 tr[:,:,2] = img_tr
 trd[:,:,2] = img_trd
 
+#print(r)
+
 pt_fix = fix[fix[:, :, 2] == 0.750]
 pt_r = r[r[:, :, 2] == 0.750]
 pt_tr = tr[tr[:, :, 2] == 0.750]
@@ -56,10 +58,29 @@ pt_trd = trd[trd[:, :, 2] == 0.750]
 # méthode 2
 
 reg = cpd.RigidRegistration(X =  pt_r, Y = pt_fix )
-TY, (s_reg, R_reg, t_reg) = reg.register()
-
-YT = reg.transform_point_cloud(Y = r)
+TY, (s, R, t) = reg.register()
 
 
-plt.imshow(YT[:,:,-1] - img_r)
+
+YT = s * np.dot(r, R) + t
+
+# YT = reg.transform_point_cloud(Y = r)
+
+
+# indice = np.lexsort(keys = YT, axis = )
+
+
+
+
+YT[:,:,0] -= YT[:,:,0].min() 
+YT[:,:,1] -= YT[:,:,1].min() 
+
+print(YT[:,:,1].max())
+
+tab = np.empty((YT[:,:,0].max().astype(int) + 1, YT[:,:,1].max().astype(int)+1))
+
+
+tab[YT[:, :, 0].astype(int), YT[:, :, 1].astype(int)] = YT[:, :, -1]
+
+plt.imshow(tab)
 plt.show()
