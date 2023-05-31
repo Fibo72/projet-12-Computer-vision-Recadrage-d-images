@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-from tkinter.messagebox import askyesno
 from Aymeric.decode_img import get_phase_img
 
 from PIL import Image, ImageTk
@@ -8,6 +7,7 @@ from PIL import Image, ImageTk
 import os
 
 from GUI.toolbar.drop_menu import DropMenu
+from GUI.toolbar.toolbar_functions import *
 from GUI.settings import *
 
 class Toolbar(tk.Frame):
@@ -17,12 +17,20 @@ class Toolbar(tk.Frame):
         self.workspace = workspace
         self.side_m = side_m
         
-
-        file_button = self.initiate_file()
+        file_button = initiate("Fichier", 
+                               ["Nouvelle image", "Nouveau set"], 
+                               [self.load_image, self.load_set], self)
         file_button.button.pack(side="left", padx=(2,0))
 
-        edit_button = self.initiate_edit()
-        edit_button.button.pack(side="left", padx=(3,0))
+        edit_button = initiate("Edition",
+                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)"],
+                               [lambda : print("to bind"), lambda : print('to bind')], self)
+        edit_button.button.pack(side="left")
+
+        affi_button = initiate("Affichage",
+                                       ["Échelles", "Color Map"],
+                                       [lambda : print("to bind"), lambda : print('to bind')], self)
+        affi_button.button.pack(side="left")
 
     def update_attributes(self, workspace, side_m):
         self.workspace = workspace
@@ -121,22 +129,6 @@ class Toolbar(tk.Frame):
     
     def save_points(self):
         print(self.workspace.points)
-    
-    def initiate_file(self):
-        loadings= ["Load Image", "Load Set", "Open Project", "Save"]
-        loadings_functions = [self.load_image, self.load_set, self.open_file, self.save_points]
-
-        file_button = DropMenu("File", self, loadings, loadings_functions)
-        file_button.button.pack(side="left", padx=(2,0))
-        return file_button
-    
-    def initiate_edit(self):
-        loadings= ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)"]
-        loadings_functions = [lambda : print("to bind"), lambda : print('to bind')]
-
-        file_button = DropMenu("Edit", self, loadings, loadings_functions)
-        file_button.button.pack(side="left", padx=(1,0))
-        return file_button
     
     def open_file(self):
         print("to implement")

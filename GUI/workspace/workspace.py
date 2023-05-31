@@ -11,7 +11,7 @@ class WorkSpace(tk.Frame):
         self.reinit()
         self.mode = "BLANK"
         
-        self.sidebar = SideBar(self, self.master, background="#b7b7b7")
+        self.sidebar = SideBar(self, side_m, self.master, background="#b7b7b7")
         self.canvas = MyCanvas(self,self.master, side_m, bg="#dddddd", borderwidth=0, highlightthickness=0)
 
         self.sidebar.update_canvas(self.canvas)
@@ -32,8 +32,9 @@ class WorkSpace(tk.Frame):
         self.current_image = None
         self.mode = "BLANK"
 
-    def link_to_canvas(self, side_m):
+    def link_to(self, side_m):
         self.canvas.link_side_menu(side_m)
+        self.sidebar.link_side_menu(side_m)
 
     def draw_image(self):
         i = self.current

@@ -2,15 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image,ImageTk
 from GUI.settings import *
+from tkinter.messagebox import askyesno
 
 
 
 class SideBar(tk.Frame):
-    def __init__(self, workspace, master, **kwargs):
+    def __init__(self, workspace, side_m, master, **kwargs):
         super().__init__(workspace, **kwargs)
         self.workspace = workspace
         self.canvas = None
         self.master = master
+        self.side_menu = side_m
 
         self.a = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/draw.png"))
         self.b = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/drag.png"))
@@ -38,6 +40,9 @@ class SideBar(tk.Frame):
     def update_canvas(self, canvas):
         self.canvas = canvas
 
+    def link_side_menu(self, side_m):
+        self.side_menu = side_m
+
     def draw_toggle(self, event=None):
         if self.workspace.mode == "DRAW":
             self.workspace.mode = "BLANK"
@@ -46,8 +51,10 @@ class SideBar(tk.Frame):
 
 
     def clear_points(self, event=None):
-        self.workspace.points[self.workspace.current] = []
-        self.workspace.draw_image()
+        if askyesno("Attention","Etes-vous sûr(e) de vouloir supprimer tous les points ?"):
+            self.workspace.points[self.workspace.current] = []
+            self.workspace.draw_image()
+            self.side_menu.update_name(self.workspace.current,0)
 
 
     def drag_toggle(self,event=None):

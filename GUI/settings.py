@@ -1,6 +1,7 @@
 from tkinter import ttk
 import tkinter as tk
 from tkinter.messagebox import showinfo
+from tkinter.messagebox import askokcancel
 
 #VARIABLES
 buttons_packing = [{"side":"top"}, {"side":"top"}, {"side":"top"},
@@ -17,7 +18,7 @@ COLOR = ['#5669ff','#ff2c64','#42eb00']
 def configure(master: tk.Tk):
     master.configure(bg="#dddddd")
     master.state("zoomed")
-    master.title("Frame X")
+    master.title("Rig Hollow")
 
 def style_them_all(button_list):
     for i,button in enumerate(button_list):
@@ -29,11 +30,10 @@ def pack_them_all(button_list):
         button.pack(buttons_packing[i])
 
 
-#popup box
+#popup boxes
 def show_pop_up(text):
     '''text : string to display'''
     showinfo("Error message", text)
-
 
 #check right file format
 

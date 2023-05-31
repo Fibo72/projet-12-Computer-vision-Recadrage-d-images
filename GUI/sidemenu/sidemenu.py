@@ -52,7 +52,6 @@ class DragDropListbox(tk.Listbox):
         print("focus out")
 
 
-
 class SideMenu:
     def __init__(self, master, workspace) -> None:
         self.width = 23
@@ -64,7 +63,7 @@ class SideMenu:
         self.frame_upper = tk.Frame(self.frame, height = 200, width=self.width)
         self.widgets.append(ttk.Label(self.frame_upper, text="Image list"))
         self.name = tk.Variable()
-        self.image_list = tk.Listbox(self.frame_upper, listvariable=self.name, height=3, selectmode="SINGLE")
+        self.image_list = tk.Listbox(self.frame_upper, listvariable=self.name, height=3, selectmode="SINGLE") #just like me :(
         self.image_list.bind("<<ListboxSelect>>", self.switch_image)
         self.frame_upper.pack(side="top")
         
@@ -107,11 +106,11 @@ class SideMenu:
         
     
     def update_name(self, current, stage):
-        if (stage > 0) and (stage < 3):
-            self.image_list.itemconfig(current, bg="yellow")
-
-        elif stage == 0:
+        if stage == 0:
             self.image_list.itemconfig(current, bg="#b7b7b7")
+
+        elif (stage > 0) and (stage < 3):
+            self.image_list.itemconfig(current, bg="yellow")
 
         elif stage == 3 :
             self.image_list.itemconfig(current, bg="lime green")

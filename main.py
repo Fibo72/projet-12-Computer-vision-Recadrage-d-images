@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter.messagebox import askyesno
+from tkinter.messagebox import askokcancel
 
 from GUI.settings import *
 from GUI.toolbar.toolbar import Toolbar
@@ -23,7 +23,7 @@ class App:
         self.side_menu = SideMenu(self.master, self.workspace)
         self.side_menu.frame.grid(row=1, column=2, sticky='ns')
 
-        self.workspace.link_to_canvas(self.side_menu)
+        self.workspace.link_to(self.side_menu)
         self.toolbar.update_attributes(self.workspace, self.side_menu)
         
         root.grid_rowconfigure(1, weight=1)
@@ -45,8 +45,13 @@ class App:
         self.master.bind("<a>", self.workspace.sidebar.zoom_reset)
         self.master.bind("<Control-n>",self.workspace.sidebar.clear_points)
 
+def on_closing():
+    if askokcancel("Quitter", "Toute progression non sauvegardée sera perdue. Souhaitez-vous quitter ?", icon='warning'):
+        root.destroy()
 
 if __name__ == '__main__':
     root = tk.Tk()
     app = App(root)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
+
