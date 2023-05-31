@@ -49,7 +49,8 @@ def header_reader(path: str) -> dict:
     return header
 
 
-def decod_phase_img(header: dict) ->np.array:
+
+def decod_phase_img(header: dict) ->np.ndarray:
     """Take the header of data and return a picture in meter
 
     Args:
@@ -67,8 +68,9 @@ def decod_phase_img(header: dict) ->np.array:
             img.append(val)
         else :
             img.append(0)
-
-    pic = np.reshape(np.array(img), (header['cn_height'],header['cn_width']))
+    img = np.array(img)
+    img_threshold = (img-np.min(img))
+    pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['cn_height'],header['cn_width'])).astype(np.uint8)
     return pic
 
 
@@ -97,10 +99,22 @@ def convert(header, phase_img, type):
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
 
 
+def get_phase_img(path: str) -> np.ndarray:
+    """Take a path to a .dat file and return the picture in meter
+
+    Args:
+        path (str): path to .dat file
+
+    Returns:
+        np.array: picture
+    """
+    return decod_phase_img(header_reader(path))
+
+
+
+
 if (__name__ == '__main__'):
-    header = header_reader('data\CALSPAR16C_init-to-d7\CALSPAR16C_d1_image2-20x.dat')
-    pic = decod_phase_img(header)
-    pic = convert(header, pic, 'meter')
+
     plt.imshow(pic, cmap = 'gnuplot_r')
     plt.show()
 
