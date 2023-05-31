@@ -1,4 +1,4 @@
-import icp
+import icp_demo
 import pycpd as cpd
 import time
 import matplotlib.pyplot as plt
@@ -10,8 +10,12 @@ img_r = plt.imread('data\logorotate.png').mean(axis = 2) # logo tourné
 img_tr = plt.imread('data\logorotatesmall.png').mean(axis = 2) #rotation + translation
 img_trd = plt.imread('data\logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
 
+plt.imshow(img_r)
+plt.figure()
+
 x, y = img_fix.shape
 X , Y = np.where(img_fix)
+
 
 X = X.reshape((x, y))
 Y = Y.reshape((x, y))
@@ -54,4 +58,8 @@ pt_trd = trd[trd[:, :, 2] == 0.750]
 reg = cpd.RigidRegistration(X =  pt_r, Y = pt_fix )
 TY, (s_reg, R_reg, t_reg) = reg.register()
 
-print(TY - pt_fix)
+YT = reg.transform_point_cloud(Y = r)
+
+
+plt.imshow(YT[:,:,-1] - img_r)
+plt.show()
