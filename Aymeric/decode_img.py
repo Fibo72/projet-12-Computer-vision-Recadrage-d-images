@@ -114,7 +114,5 @@ def get_phase_img(path: str) -> np.ndarray:
 
 
 if (__name__ == '__main__'):
-
-    plt.imshow(pic, cmap = 'gnuplot_r')
-    plt.show()
+    path = 'C:/Users/Aymeric/Desktop/Stage/Prog
 
