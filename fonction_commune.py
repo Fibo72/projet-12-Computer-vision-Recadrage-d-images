@@ -1,7 +1,7 @@
 import json
 import cv2
 import os
-
+import numpy as np
 
 def recadrage(path_dict: str)-> list:
     """Crop images
@@ -73,7 +73,7 @@ def generate_json(path_dict: str, img_folder: list, img_name: list, p1: list, p2
     """Generate a json file to crop images
 
     Args:
-        path_dict (str): Path of the json file
+        path_dict (str): Path of the folder
         img_folder (list): List of the folder of the images
         img_name (list): List of the name of the images
         p1 (list): List of the #1st point of the images
@@ -108,3 +108,56 @@ def generate_json(path_dict: str, img_folder: list, img_name: list, p1: list, p2
         json.dump(load_dict, f, indent=4)
 
 
+
+def prof_topo(A,B, img):
+    """Return the profile of the topography
+
+    Args:
+        A (list): #1st point of the profile
+        B (list): #2nd point of the profile
+        img (np.array): Image of the topography
+
+    Returns:
+        list: Profile of the topography
+    """
+    x1, y1 = A
+    x2, y2 = B
+
+    def f(x):
+        return (y2-y1)/(x2-x1)*(x-x1)+y1
+
+
+    X = np.round(np.arange(x1, x2+1)).astype(int)
+    Y = np.round(f(X)).astype(int)
+    
+    prof = img[Y,X]
+
+    return X, Y, prof
+
+
+if  __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    path_dict = 'test/1_14__18_7.png'
+    
+    load_pic = plt.imread(path_dict)
+
+    data = prof_topo((1,14),(18,7), load_pic)
+    print(data[2])
+    plt.figure()
+    plt.plot(data[2])
+    plt.show()
+
+    plt.figure()
+    plt.imshow(load_pic)
+    plt.plot(data[0], data[1],'bx')
+    plt.show()
+
+    np.meshgrid(data[0], data[1])
+    img = np.zeros((20, 20,4))
+    i = 0
+    for y,k in zip(data[0], data[1]):
+        img[k,y] = data[2][i,:]
+        i+=1
+    plt.figure()
+    plt.imshow(img)
+    plt.show()

@@ -38,15 +38,15 @@ def header_reader(path: str) -> dict:
     header['cn_width'] = int.from_bytes(data[68:70], "big")
     header['cn_height'] = int.from_bytes(data[70:72], "big")
     header['cn_n_bytes'] = int.from_bytes(data[72:76], "big")
-    header['intf_scale_factor'] = struct.unpack('f',data[164:168])[0]
-    header['wavelength_in'] = struct.unpack('f',data[168:172])[0]
-    header['obliquity_factor'] = struct.unpack('f',data[176:180])[0]
+    header['intf_scale_factor'] = struct.unpack('f',data[167:163:-1])[0]
+    print(data[168:172])
+    header['wavelength_in'] = struct.unpack('f',data[171:167:-1])[0]
+    header['obliquity_factor'] = struct.unpack('f',data[179:175:-1])[0]
     header['phase_res'] = int.from_bytes(data[218:220], "big")
+    
     header['phase_raw'] = data[header['header_size'] + header['ac_n_bytes']: header['header_size'] +header['ac_n_bytes'] + header['cn_n_bytes']]
 
     return header
-
-
 
 
 def decod_phase_img(header: dict) ->np.array:
@@ -60,10 +60,11 @@ def decod_phase_img(header: dict) ->np.array:
     """
     img = []
 
+
     for i in range(0,header['cn_n_bytes'],4):
         val = int.from_bytes(header['phase_raw'][i:i+4], "big", signed = True)
         if (abs(val) < 0x7FFFFFF8):
-            img.append(val*(header['intf_scale_factor']*header['wavelength_in']*header['obliquity_factor']/32768))
+            img.append(val)
         else :
             img.append(0)
 
@@ -71,11 +72,35 @@ def decod_phase_img(header: dict) ->np.array:
     return pic
 
 
+def convert(header, phase_img, type):
+    """Convert the phase image in meter or waves"""
+    R = {
+        '1': {
+            '0': 4096,
+            '1': 32768
+        },
+        '2' :{
+            '0':4096,
+            '1':32768,
+            '2':131072,
+        },
+        '3' :{
+            '0':4096,
+            '1':32768,
+            '2':131072,
+        }
+    }
+    if (type == 'waves'):
+        return phase_img * header['intf_scale_factor']* header['obliquity_factor'] / R[str(header['header_format'])][str(header['phase_res'])]
+    elif (type == 'meter'):
+        print(header['wavelength_in'])
+        return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
+
+
 if (__name__ == '__main__'):
-        
-    pic = decod_phase_img(header_reader('data\CALSPAR16C_init-to-d7\CALSPAR16C_d1_image2-20x.dat'))
-
+    header = header_reader('data\CALSPAR16C_init-to-d7\CALSPAR16C_d1_image2-20x.dat')
+    pic = decod_phase_img(header)
+    pic = convert(header, pic, 'meter')
     plt.imshow(pic, cmap = 'gnuplot_r')
-
     plt.show()
 
