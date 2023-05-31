@@ -74,6 +74,47 @@ def decod_phase_img(header: dict) ->np.ndarray:
     return pic
 
 
+def encode(header: dict, itensity_img: np.ndarray, phase_img : np.ndarray, path: str, name: str):
+    """Encode the header and the picture in a .dat file"""
+
+    intensity_img = np.reshape(itensity_img, (header['ac_height']*header['ac_width']))
+    phase_img = np.reshape(phase_img, (header['cn_height']*header['cn_width']))
+
+
+    file = open(f"{path + name}.dat", 'wb')
+    file.write(header['magic_number'].to_bytes(4, "big"))
+    file.write(header['header_format'].to_bytes(2, "big"))
+    file.write(header['header_size'].to_bytes(4, "big"))
+    file.write(header['ac_org_x'].to_bytes(2, "big"))
+    file.write(header['ac_org_y'].to_bytes(2, "big"))
+    file.write(header['ac_width'].to_bytes(2, "big"))
+    file.write(header['ac_height'].to_bytes(2, "big"))
+    file.write(header['ac_n_bucket'].to_bytes(2, "big"))
+    file.write(header['ac_range'].to_bytes(2, "big"))
+    file.write(header['ac_n_bytes'].to_bytes(4, "big"))
+    
+    for i in range(header['ac_n_bytes']):
+        file.write(itensity_img[i].to_bytes(1, "big"))
+    
+    file.write(header['cn_org_x'].to_bytes(2, "big"))
+    file.write(header['cn_org_y'].to_bytes(2, "big"))
+    file.write(header['cn_width'].to_bytes(2, "big"))
+    file.write(header['cn_height'].to_bytes(2, "big"))
+    file.write(header['cn_n_bytes'].to_bytes(4, "big"))
+    file.write(header['intf_scale_factor'].to_bytes(4, "big"))
+    file.write(header['wavelength_in'].to_bytes(4, "big"))
+    file.write(header['obliquity_factor'].to_bytes(4, "big"))
+    file.write(header['phase_res'].to_bytes(2, "big"))
+    
+    for i in range(header['cn_n_bytes']):
+        file.write(phase_img[i].to_bytes(1, "big"))
+
+    file.close()
+
+
+
+
+
 def convert(header, phase_img, type):
     """Convert the phase image in meter or waves"""
     R = {
