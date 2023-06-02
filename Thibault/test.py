@@ -57,7 +57,7 @@ pt_trd = trd[trd[:, :, 2] == 0.750]
 
 # méthode 2
 
-reg = cpd.RigidRegistration(X =  pt_r, Y = pt_fix )
+reg = cpd.RigidRegistration(X =  pt_fix, Y = pt_r )
 TY, (s, R, t) = reg.register()
 
 
