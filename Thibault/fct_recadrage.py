@@ -2,20 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pycpd as cpd
 
-def recadrage_cpd(target, pt_source, pt_target):
+def recadrage_cpd(source, target, pt_source, pt_target ):
     """recadre une image par pcd
-    besoin de récupérer les points sourcees sous la forme nx3 """
+    besoin de récupérer les points Lsourcees sous la forme nx3 """
 
     #mise en forme des données
 
-    x, y = target.shape
-    X , Y = np.meshgrid(np.arange(x), np.arange(y)) 
-
+    x, y = source.shape
+    X , Y = np.where(source)
     X = X.reshape((x, y))
     Y = Y.reshape((x, y))
 
+    Lsource = np.empty((x, y, 3))
     Ltarget = np.empty((x, y, 3))
 
+    Lsource[:,:,0] = X
+    Lsource[:,:,1] = Y
     Ltarget[:,:,0] = X
     Ltarget[:,:,1] = Y
     Lsource[:,:,2] = source
@@ -39,15 +41,8 @@ def recadrage_cpd(target, pt_source, pt_target):
 
     return tab
 
-if __name__ == "__main__":
-    #test
-    target = np.zeros((100, 100))
-    target += 0.1
-    target[20:50, 20:70] = 1
 
-    print("target")
-    plt.imshow(target)
-    plt.show()
+if __name__ == "__main__" :
 
     img_fix = plt.imread('data//logocolore.png').mean(axis = 2) #logo de base
     img_r = plt.imread('data//logorotate.png').mean(axis = 2) # logo tourné
@@ -93,3 +88,5 @@ if __name__ == "__main__":
     Rr = recadrage_cpd(img_fix, img_r, pt_fix, pt_r)
 
     plt.imshow(Rr)
+
+    print(Rr)
