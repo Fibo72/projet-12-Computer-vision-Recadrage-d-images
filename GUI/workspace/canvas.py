@@ -26,7 +26,7 @@ class MyCanvas(tk.Canvas):
         except:
             pass
         else:
-            if self.workspace.mode == "DRAW" and point_number < 3 and self.on_the_image(x,y,i):
+            if self.workspace.mode == "DRAW" and point_number < self.workspace.maxpoints and self.on_the_image(x,y,i):
                 coeff = self.workspace.scale[i]
                 x_off, y_off = self.canvasx(0), self.canvasy(0)
 
@@ -35,7 +35,8 @@ class MyCanvas(tk.Canvas):
                                                                         y_off + y - 3,
                                                                         x_off + x + 3, 
                                                                         y_off + y + 3, 
-                                                                        fill=COLOR[point_number]))
+                                                                        fill=COLOR[point_number%3]))
+                self.create_text(x + 10, y - 10, text = str(point_number + 1), fill=COLOR[point_number%3], font="Arial 12 bold")
                 
                 self.side_menu.update_name(self.workspace.current, len(self.workspace.points[i]))
             
@@ -44,22 +45,19 @@ class MyCanvas(tk.Canvas):
                 self.scan_mark(x, y)
                 self.drag_start = [x, y]
         
-
     def move(self,event):
         x = event.x
         y = event.y
 
         if self.workspace.mode == "DRAG" and self.drag_on:
             self.scan_dragto(x, y, gain=1)
-    
 
     def release(self, event):
         x = event.x
         y = event.y
 
         if self.workspace.mode == "DRAG" and self.drag_on:
-            self.drag_on = False
-    
+            self.drag_on = False   
 
     def remove_last(self,event=None):
         i = self.workspace.current
@@ -68,7 +66,8 @@ class MyCanvas(tk.Canvas):
             last = self.workspace.points_objects[i].pop()
             self.workspace.points[i].pop()
             self.delete(last)
-            self.side_menu.update_name(self.workspace.current, len(self.workspace.points[i]))
+            self.side_menu.update_name(i, len(self.workspace.points[i]))
+            self.workspace.draw_image()
     
     def draw_points(self):
         i = self.workspace.current
@@ -84,7 +83,8 @@ class MyCanvas(tk.Canvas):
                                                                          -y_off + (y+0.5)*coeff - 3,
                                                                          -x_off + (x+0.5)*coeff + 3,
                                                                          -y_off + (y+0.5)*coeff + 3,
-                                                                         fill=COLOR[k]))
+                                                                         fill=COLOR[k%3]))
+                self.create_text(-x_off + (x+0.5)*coeff + 10, -y_off + (y+0.5)*coeff - 10, text = str(k+1), fill=COLOR[k], font="Arial 12 bold")
     
     def on_the_image(self, x, y, i):
         x_t = x + self.canvasx(0)

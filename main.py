@@ -54,4 +54,3 @@ if __name__ == '__main__':
     app = App(root)
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
-

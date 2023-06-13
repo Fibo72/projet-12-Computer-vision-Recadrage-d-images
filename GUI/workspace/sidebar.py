@@ -19,7 +19,8 @@ class SideBar(tk.Frame):
         self.c = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/zoom_in.png"))
         self.d = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/zoom_out.png"))
         self.e = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/reset.png"))
-        self.f = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/ruler.png"))
+        self.f = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/clear.png"))
+        self.g = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/ruler.png"))
 
         style = ttk.Style()
         style.configure('TButton', background = '#b7b7b7', borderwidth=0)
@@ -31,8 +32,8 @@ class SideBar(tk.Frame):
         self.button_list.append(ttk.Button(self.workspace, image=self.c, command=self.zoom_in))
         self.button_list.append(ttk.Button(self.workspace, image=self.d, command=self.zoom_out))
         self.button_list.append(ttk.Button(self.workspace, image=self.e, command=self.zoom_reset))
-        self.button_list.append(ttk.Button(self.workspace, text="Clear", command=self.clear_points))
-        self.button_list.append(ttk.Button(self.workspace, image=self.f, command=lambda :print("no coded yet")))
+        self.button_list.append(ttk.Button(self.workspace, image=self.f, command=self.clear_points))
+        self.button_list.append(ttk.Button(self.workspace, image=self.g, command=lambda :print("no coded yet")))
 
         style_them_all(self.button_list)
         pack_them_all(self.button_list)
@@ -49,13 +50,11 @@ class SideBar(tk.Frame):
         self.master.config(cursor="arrow") # type: ignore
         self.workspace.mode = "DRAW"
 
-
     def clear_points(self, event=None):
         if askyesno("Attention","Etes-vous sûr(e) de vouloir supprimer tous les points ?"):
             self.workspace.points[self.workspace.current] = []
             self.workspace.draw_image()
             self.side_menu.update_name(self.workspace.current,0)
-
 
     def drag_toggle(self,event=None):
         if self.workspace.mode == "DRAG":
@@ -65,18 +64,15 @@ class SideBar(tk.Frame):
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "DRAG"
 
-
     def zoom_in(self,event=None):
         if self.workspace.scale[self.workspace.current] <= 2.9 or True:
             self.workspace.scale[self.workspace.current] += 0.2
             self.workspace.draw_image()
 
-
     def zoom_out(self,event=None):
         if self.workspace.scale[self.workspace.current] > 0.21:
             self.workspace.scale[self.workspace.current] -= 0.2
             self.workspace.draw_image()
-
 
     def zoom_reset(self,event=None):
         i = self.workspace.current
