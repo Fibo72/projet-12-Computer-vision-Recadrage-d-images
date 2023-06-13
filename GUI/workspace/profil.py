@@ -1,27 +1,16 @@
 from tkinter import *
 
-class SegmentDrawer:
-    def __init__(self, master):
-        self.master = master
-        self.canvas = Canvas(master, width=400, height=400, )
-        self.canvas.pack()
-        self.button = Button(master, text="Process", command=self.process)
-        self.button.pack()
-        self.button1 = Button(master, text="Clear", command=self.reset)
-        self.button1.pack()
-        self.points = []
-        self.segment = None
-        self.active_point = None
-        self.canvas.bind("<Button-1>", self.click)
-        self.canvas.bind("<B1-Motion>", self.move_point)
-        self.canvas.bind("<ButtonRelease-1>", self.release_point)
+class Profile:
+    def __init__(self, canvas, workspace):
+        self.canvas = canvas
+        self.workspace = workspace
 
     def click(self, event):
         if len(self.points) < 2:
             point = self.canvas.create_oval(event.x-5, event.y-5, event.x+5, event.y+5, fill='red', width=2)
             self.points.append(point)
-            if len(self.points) == 2:
-                self.draw_segment()
+        if len(self.points) == 2:
+            self.draw_segment()
         
         else :
             self.active_point = self.find_closest_point(event)
@@ -68,7 +57,3 @@ class SegmentDrawer:
         self.points = []
         self.segment = None
         self.active_point = None
-
-root = Tk()
-app = SegmentDrawer(root)
-root.mainloop()

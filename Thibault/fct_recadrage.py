@@ -44,10 +44,10 @@ def recadrage_cpd(source, target, pt_source, pt_target ):
 
 if __name__ == "__main__" :
 
-    img_fix = plt.imread('data//logocolore.png').mean(axis = 2) #logo de base
-    img_r = plt.imread('data//logorotate.png').mean(axis = 2) # logo tourné
-    img_tr = plt.imread('data//logorotatesmall.png').mean(axis = 2) #rotation + translation
-    img_trd = plt.imread('data//logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
+    img_fix = plt.imread('Thibault\data\logocolore.jpg').mean(axis = 2) #logo de base
+    img_r = plt.imread('Thibault\data\logorotate.jpg').mean(axis = 2) # logo tourné
+    # img_tr = plt.imread('data//logorotatesmall.png').mean(axis = 2) #rotation + translation
+    # img_trd = plt.imread('data//logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
 
     plt.imshow(img_fix)
 
@@ -75,8 +75,8 @@ if __name__ == "__main__" :
 
     fix[:,:,2] = img_fix
     r[:,:,2] =  img_r
-    tr[:,:,2] = img_tr
-    trd[:,:,2] = img_trd
+    # tr[:,:,2] = img_tr
+    # trd[:,:,2] = img_trd
 
 
 
