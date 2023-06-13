@@ -18,7 +18,6 @@ def recadrage_cpd(target, pt_source, pt_target):
 
     Ltarget[:,:,0] = X
     Ltarget[:,:,1] = Y
-    Lsource[:,:,2] = source
     Ltarget[:,:,2] = target
 
     # Calcul par cpd
