@@ -17,6 +17,8 @@ plt.figure()
 x, y = img_fix.shape
 X , Y = np.where(img_fix)
 
+print(X.shape, Y.shape)
+
 X = X.reshape((x, y))
 Y = Y.reshape((x, y))
 

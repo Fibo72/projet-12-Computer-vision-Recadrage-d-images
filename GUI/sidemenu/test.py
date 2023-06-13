@@ -3,10 +3,12 @@ from tkinter import *
 class SegmentDrawer:
     def __init__(self, master):
         self.master = master
-        self.test = Canvas(master, width=400, height=400, background="red")
-        self.test.pack()
         self.canvas = Canvas(master, width=400, height=400, )
         self.canvas.pack()
+        self.button = Button(master, text="Process", command=self.process)
+        self.button.pack()
+        self.button1 = Button(master, text="Clear", command=self.reset)
+        self.button1.pack()
         self.points = []
         self.segment = None
         self.active_point = None
@@ -38,10 +40,7 @@ class SegmentDrawer:
             self.canvas.delete(self.segment)
         x1, y1, x2, y2 = self.canvas.coords(self.points[0])
         x3, y3, x4, y4 = self.canvas.coords(self.points[1])
-        x_center = (x1 + x2 + x3 + x4) / 4
-        y_center = (y1 + y2 + y3 + y4) / 4
-        self.segment = self.canvas.create_line(x1+2, y1+2, x3+2, y3+2, fill='blue', width=2)
-        #self.canvas.create_oval(x_center-3, y_center-3, x_center+3, y_center+3, fill='blue')
+        self.segment = self.canvas.create_line(x1+5, y1+5, x3+5, y3+5, fill='blue', width=2)
 
     def find_closest_point(self, event):
         closest_point = None
@@ -56,6 +55,20 @@ class SegmentDrawer:
                 min_distance = distance
         return closest_point
 
+    def process(self):
+        try :
+            point1 = (self.canvas.coords(self.points[0])[0] + 5, self.canvas.coords(self.points[0])[1] + 5)
+            point2 = (self.canvas.coords(self.points[1])[0] + 5, self.canvas.coords(self.points[1])[1] + 5)
+        except:
+            print("Pas assez de points")
+        else:
+            print(point1, point2) #format : (j, i) = (colonne, ligne)
+
+    def reset(self):
+        self.canvas.delete("all")
+        self.points = []
+        self.segment = None
+        self.active_point = None
 
 root = Tk()
 app = SegmentDrawer(root)
