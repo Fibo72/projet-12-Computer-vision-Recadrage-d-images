@@ -2,6 +2,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pycpd as cpd
 
+def apply_rotation(matrix, rotation_matrix):
+    # Reshape the matrix to have shape (n*m, 3)
+    reshaped_matrix = np.reshape(matrix, (-1, 3))
+
+    # Apply the rotation matrix to the reshaped matrix
+    rotated_matrix = np.matmul(reshaped_matrix, rotation_matrix)
+
+    # Reshape the rotated matrix back to the original shape
+    rotated_matrix = np.reshape(rotated_matrix, matrix.shape)
+
+    return rotated_matrix
+
 def recadrage_cpd(target, pt_source, pt_target):
     """recadre une image par pcd
     besoin de récupérer les points sourcees sous la forme nx3 """
@@ -9,7 +21,8 @@ def recadrage_cpd(target, pt_source, pt_target):
     #mise en forme des données
 
     x, y = target.shape
-    X , Y = np.meshgrid(np.arange(x), np.arange(y)) 
+    X, Y = np.meshgrid(np.arange(x), np.arange(y)) 
+
 
     X = X.reshape((x, y))
     Y = Y.reshape((x, y))
@@ -25,7 +38,7 @@ def recadrage_cpd(target, pt_source, pt_target):
     reg = cpd.RigidRegistration(X =  pt_source, Y = pt_target )
     TY, (s, R, t) = reg.register()
 
-    YT = s * np.dot(Ltarget, R) + t
+    YT = s * apply_rotation( Ltarget,R)  + t
 
     # application à l'image
 
@@ -39,21 +52,11 @@ def recadrage_cpd(target, pt_source, pt_target):
     return tab
 
 if __name__ == "__main__":
-    #test
-    target = np.zeros((100, 100))
-    target += 0.1
-    target[20:50, 20:70] = 1
-
-    print("target")
-    plt.imshow(target)
-    plt.show()
 
     img_fix = plt.imread('data//logocolore.png').mean(axis = 2) #logo de base
     img_r = plt.imread('data//logorotate.png').mean(axis = 2) # logo tourné
     img_tr = plt.imread('data//logorotatesmall.png').mean(axis = 2) #rotation + translation
     img_trd = plt.imread('data//logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
-
-    plt.imshow(img_fix)
 
     x, y = img_fix.shape
     X , Y = np.where(img_fix)
@@ -89,6 +92,23 @@ if __name__ == "__main__":
     pt_tr = tr[tr[:, :, 2] == 0.750]
     pt_trd = trd[trd[:, :, 2] == 0.750]
 
-    Rr = recadrage_cpd(img_fix, img_r, pt_fix, pt_r)
+    Rr = recadrage_cpd( img_r, pt_fix, pt_r)
+    Rtr = recadrage_cpd( img_tr, pt_fix, pt_tr)
+    Rtrd = recadrage_cpd(img_trd, pt_fix, pt_trd)
 
+    plt.figure()
+
+    plt.subplot(221)
+    plt.imshow(img_fix)
+    plt.subplot(222)
     plt.imshow(Rr)
+    plt.subplot(223)
+    plt.imshow(Rtr)
+    plt.subplot(224)
+    plt.imshow(Rtrd)
+    plt.show()
+
+
+
+
+
