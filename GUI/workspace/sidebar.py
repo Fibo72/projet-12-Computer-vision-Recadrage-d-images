@@ -20,7 +20,8 @@ class SideBar(tk.Frame):
         self.d = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/zoom_out.png"))
         self.e = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/reset.png"))
         self.f = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/clear.png"))
-        self.g = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/ruler.png"))
+        self.g = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/profil.png"))
+        self.h = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/modif.png"))
 
         style = ttk.Style()
         style.configure('TButton', background = '#b7b7b7', borderwidth=0)
@@ -33,7 +34,8 @@ class SideBar(tk.Frame):
         self.button_list.append(ttk.Button(self.workspace, image=self.d, command=self.zoom_out))
         self.button_list.append(ttk.Button(self.workspace, image=self.e, command=self.zoom_reset))
         self.button_list.append(ttk.Button(self.workspace, image=self.f, command=self.clear_points))
-        self.button_list.append(ttk.Button(self.workspace, image=self.g, command=lambda :print("no coded yet")))
+        self.button_list.append(ttk.Button(self.workspace, image=self.g, command=self.toggle_profile))
+        self.button_list.append(ttk.Button(self.workspace, image=self.h, command=self.toggle_modif))
 
         style_them_all(self.button_list)
         pack_them_all(self.button_list)
@@ -63,6 +65,23 @@ class SideBar(tk.Frame):
         else:
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "DRAG"
+
+    def toggle_modif(self,event=None):
+        if self.workspace.mode == "MODIF":
+            self.master.config(cursor="arrow") # type: ignore
+            self.workspace.mode = "BLANK"
+        else:
+            self.master.config(cursor="hand2") # type: ignore
+            self.workspace.mode = "MODIF"        
+
+    def toggle_profile(self,event=None):
+        if self.workspace.mode == "PROFILE":
+            self.master.config(cursor="arrow") # type: ignore
+            self.workspace.mode = "BLANK"
+            self.workspace.draw_image()
+        else:
+            self.master.config(cursor="hand2") # type: ignore
+            self.workspace.mode = "PROFILE"  
 
     def zoom_in(self,event=None):
         if self.workspace.scale[self.workspace.current] <= 2.9 or True:

@@ -26,8 +26,9 @@ class Toolbar(tk.Frame):
         file_button.button.pack(side="left", padx=(2,0))
 
         edit_button = initiate("Edition",
-                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)"],
+                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)", "Réinitialiser"],
                                [lambda : print("to bind"), 
+                                lambda : print('to bind'),
                                 lambda : print('to bind')], self)
         edit_button.button.pack(side="left")
 
@@ -41,6 +42,9 @@ class Toolbar(tk.Frame):
 
     def update_attributes(self, workspace, side_m):
         self.workspace = workspace
+
+
+
         self.side_m = side_m
 
     def load_image(self):

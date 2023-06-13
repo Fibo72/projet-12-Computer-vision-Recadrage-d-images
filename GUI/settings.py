@@ -5,12 +5,12 @@ from tkinter.messagebox import showinfo
 #VARIABLES
 buttons_packing = [{"side":"top"}, {"side":"top"}, {"side":"top"},
                    {"side":"top"}, {"side":"top"}, {"side":"top"}, 
-                   {"side":"top"}]
+                   {"side":"top"}, {"side":"top"}]
 
 
 buttons_style = [{"text":"Draw"}, {"text":"Drag"}, {"text":'+'},
                  {"text":'-'}, {"text":'Reset'}, {"text":'Clear'},
-                 {"text":'Ruler'}]
+                 {"text":'Ruler'}, {"text":'Modif'}]
 
 COLOR = ['#5669ff','#ff2c64','#42eb00']
 

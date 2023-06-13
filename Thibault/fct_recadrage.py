@@ -2,33 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pycpd as cpd
 
-def apply_rotation(matrix, rotation_matrix):
-    # Reshape the matrix to have shape (n*m, 3)
-    reshaped_matrix = np.reshape(matrix, (-1, 3))
-
-    # Apply the rotation matrix to the reshaped matrix
-    rotated_matrix = np.matmul(reshaped_matrix, rotation_matrix)
-
-    # Reshape the rotated matrix back to the original shape
-    rotated_matrix = np.reshape(rotated_matrix, matrix.shape)
-
-    return rotated_matrix
-
 def recadrage_cpd(target, pt_source, pt_target):
     """recadre une image par pcd
-    besoin de récupérer les points sourcees sous la forme nx3 """
+    besoin de récupérer les points Lsourcees sous la forme nx3 """
 
     #mise en forme des données
 
-    x, y = target.shape
-    X, Y = np.meshgrid(np.arange(x), np.arange(y)) 
-
-
+    x, y = source.shape
+    X , Y = np.where(source)
     X = X.reshape((x, y))
     Y = Y.reshape((x, y))
 
+    Lsource = np.empty((x, y, 3))
     Ltarget = np.empty((x, y, 3))
 
+    Lsource[:,:,0] = X
+    Lsource[:,:,1] = Y
     Ltarget[:,:,0] = X
     Ltarget[:,:,1] = Y
     Ltarget[:,:,2] = target
@@ -51,12 +40,13 @@ def recadrage_cpd(target, pt_source, pt_target):
 
     return tab
 
-if __name__ == "__main__":
 
-    img_fix = plt.imread('data//logocolore.png').mean(axis = 2) #logo de base
-    img_r = plt.imread('data//logorotate.png').mean(axis = 2) # logo tourné
-    img_tr = plt.imread('data//logorotatesmall.png').mean(axis = 2) #rotation + translation
-    img_trd = plt.imread('data//logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
+if __name__ == "__main__" :
+
+    img_fix = plt.imread('Thibault\data\logocolore.jpg').mean(axis = 2) #logo de base
+    img_r = plt.imread('Thibault\data\logorotate.jpg').mean(axis = 2) # logo tourné
+    # img_tr = plt.imread('data//logorotatesmall.png').mean(axis = 2) #rotation + translation
+    # img_trd = plt.imread('data//logorotatesmalldeforme.png').mean(axis = 2) # rotation + translation + dilatation
 
     x, y = img_fix.shape
     X , Y = np.where(img_fix)
@@ -82,8 +72,8 @@ if __name__ == "__main__":
 
     fix[:,:,2] = img_fix
     r[:,:,2] =  img_r
-    tr[:,:,2] = img_tr
-    trd[:,:,2] = img_trd
+    # tr[:,:,2] = img_tr
+    # trd[:,:,2] = img_trd
 
 
 
@@ -112,3 +102,5 @@ if __name__ == "__main__":
 
 
 
+
+    print(Rr)
