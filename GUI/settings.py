@@ -1,15 +1,16 @@
 from tkinter import ttk
 import tkinter as tk
 from tkinter.messagebox import showinfo
-from tkinter.messagebox import askokcancel
 
 #VARIABLES
 buttons_packing = [{"side":"top"}, {"side":"top"}, {"side":"top"},
-                   {"side":"top"}, {"side":"top"}, {"side":"top",  "pady" :20}, {"side":"top"}]
+                   {"side":"top"}, {"side":"top"}, {"side":"top"}, 
+                   {"side":"top"}]
 
 
 buttons_style = [{"text":"Draw"}, {"text":"Drag"}, {"text":'+'},
-                 {"text":'-'}, {"text":'Reset'}, {"text":'Clear', "width": 5}, {"text":'Ruler'}]
+                 {"text":'-'}, {"text":'Reset'}, {"text":'Clear'},
+                 {"text":'Ruler'}]
 
 COLOR = ['#5669ff','#ff2c64','#42eb00']
 
@@ -19,6 +20,8 @@ def configure(master: tk.Tk):
     master.configure(bg="#dddddd")
     master.state("zoomed")
     master.title("Rig Hollow")
+    icon = tk.PhotoImage(file='GUI/picture/logo.png')
+    master.iconphoto(True, icon)
 
 def style_them_all(button_list):
     for i,button in enumerate(button_list):

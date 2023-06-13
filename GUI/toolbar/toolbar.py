@@ -6,9 +6,9 @@ from PIL import Image, ImageTk
 
 import os
 
-from GUI.toolbar.drop_menu import DropMenu
 from GUI.toolbar.toolbar_functions import *
 from GUI.settings import *
+from GUI.toolbar.option_menus.menus_handler import MenusHandler
 
 class Toolbar(tk.Frame):
     def __init__(self, master, workspace, side_m):
@@ -16,21 +16,28 @@ class Toolbar(tk.Frame):
         self.master = master
         self.workspace = workspace
         self.side_m = side_m
+
+        self.menuHandler = MenusHandler(self.master, self)
         
         file_button = initiate("Fichier", 
                                ["Nouvelle image", "Nouveau set"], 
-                               [self.load_image, self.load_set], self)
+                               [self.load_image, 
+                                self.load_set], self)
         file_button.button.pack(side="left", padx=(2,0))
 
         edit_button = initiate("Edition",
                                ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)"],
-                               [lambda : print("to bind"), lambda : print('to bind')], self)
+                               [lambda : print("to bind"), 
+                                lambda : print('to bind')], self)
         edit_button.button.pack(side="left")
 
-        affi_button = initiate("Affichage",
-                                       ["Échelles", "Color Map"],
-                                       [lambda : print("to bind"), lambda : print('to bind')], self)
-        affi_button.button.pack(side="left")
+        config_button = initiate("Configuration",
+                                ["Recadrage", "Échelles", "Color Map", "Points"],
+                                [lambda : print("to bind"), 
+                                 lambda : print("to bind"), 
+                                 lambda : print('to bind'), 
+                                 self.menuHandler.createPointsMenu], self)
+        config_button.button.pack(side="left")
 
     def update_attributes(self, workspace, side_m):
         self.workspace = workspace

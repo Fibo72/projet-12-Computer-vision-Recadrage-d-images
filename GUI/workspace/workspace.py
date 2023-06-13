@@ -13,6 +13,7 @@ class WorkSpace(tk.Frame):
         
         self.sidebar = SideBar(self, side_m, self.master, background="#b7b7b7")
         self.canvas = MyCanvas(self,self.master, side_m, bg="#dddddd", borderwidth=0, highlightthickness=0)
+        self.side_m = side_m
 
         self.sidebar.update_canvas(self.canvas)
 
@@ -27,6 +28,7 @@ class WorkSpace(tk.Frame):
         self.h = []
         self.w = []
         self.points, self.points_objects = [], []
+        self.maxpoints = 3
         self.scale= []
         #self.offset = []
         self.current_image = None
@@ -35,6 +37,7 @@ class WorkSpace(tk.Frame):
     def link_to(self, side_m):
         self.canvas.link_side_menu(side_m)
         self.sidebar.link_side_menu(side_m)
+        self.side_m = side_m
 
     def draw_image(self):
         i = self.current
@@ -56,4 +59,15 @@ class WorkSpace(tk.Frame):
         for button in self.sidebar.button_list:
             button.configure(state = "normal")
 
-        
+    def shorten_points(self):
+        if len(self.points) > 0:
+            for i in range(len(self.points)):
+                en_trop = len(self.points[i]) - self.maxpoints
+                if en_trop > 0:
+                    self.points[i] = self.points[i][:self.maxpoints]
+                    for _ in range(en_trop):
+                        last = self.points_objects[i].pop()
+                        self.canvas.delete(last)
+        self.side_m.update_name(self.current, len(self.points[self.current]))
+
+#TODO : fix le "re"dessin des chiffres.
