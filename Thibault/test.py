@@ -15,6 +15,8 @@ plt.figure()
 
 x, y = img_fix.shape
 X , Y = np.where(img_fix)
+X1, Y1 = np.meshgrid(x,y)
+print(X1, Y1)
 
 print(X.shape, Y.shape)
 

@@ -155,32 +155,21 @@ def get_phase_img(path: str) -> np.ndarray:
 
 
 
-def generate_json(path_dict: str, img_folder: list, img_name: list, p1: list, p2: list, p3: list, p4: list, crop_number: int, out_path: str, comment: str)->None:
+def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: int, out_path: str, comment: str)->None:
     """Generate a json file to crop images
 
     Args:
         path_dict (str): Path of the folder
-        img_folder (list): List of the folder of images
         img_name (list): List of the name of images
-        p1 (list): List of the #1st point of images
-        p2 (list): List of the #2nd point of images
-        p3 (list): List of the #3rd point of images
-        p4 (list): List of the #4th point of images
+        p1 (np.ndarray): (n,m,2) array of points
         crop_number (int): Number of the image on which all the other will be cropped
         out_path (str): Path where new images will be savec
         comment (str): A comment linked to this special cropp
     """
-    if (len(img_folder) != len(img_name) != len(p1) != len(p2) != len(p3) != len(p4)):
-        raise ValueError
 
     img_dict = {
-        "nb_img": len(img_folder),
-        "img_folder": img_folder,
         "img_name": img_name,
         "p1": p1,
-        "p2": p2,
-        "p3": p3,
-        "p4": p4
     }
 
     load_dict = {
@@ -226,5 +215,9 @@ if  __name__ == "__main__":
 
 
 if (__name__ == '__main__'):
-    path = 'C:/Users/Aymeric/Desktop/Stage/Prog'
 
+
+    tab = get_phase_img('data//CALSPAR16C_init-to-d7//CALSPAR16C_d4_image1-5x.dat')
+    plt.figure()
+    plt.imshow(tab, cmap = 'gray')
+    plt.show()
