@@ -39,7 +39,6 @@ def header_reader(path: str) -> dict:
     header['cn_height'] = int.from_bytes(data[70:72], "big")
     header['cn_n_bytes'] = int.from_bytes(data[72:76], "big")
     header['intf_scale_factor'] = struct.unpack('f',data[167:163:-1])[0]
-    print(data[168:172])
     header['wavelength_in'] = struct.unpack('f',data[171:167:-1])[0]
     header['obliquity_factor'] = struct.unpack('f',data[179:175:-1])[0]
     header['phase_res'] = int.from_bytes(data[218:220], "big")
@@ -47,7 +46,6 @@ def header_reader(path: str) -> dict:
     header['phase_raw'] = data[header['header_size'] + header['ac_n_bytes']: header['header_size'] +header['ac_n_bytes'] + header['cn_n_bytes']]
 
     return header
-
 
 
 def decod_phase_img(header: dict) ->np.ndarray:
@@ -112,10 +110,7 @@ def encode(header: dict, itensity_img: np.ndarray, phase_img : np.ndarray, path:
     file.close()
 
 
-
-
-
-def convert(header, phase_img, type):
+def convert(header, phase_img, type) -> np.ndarray:
     """Convert the phase image in meter or waves"""
     R = {
         '1': {
@@ -136,8 +131,9 @@ def convert(header, phase_img, type):
     if (type == 'waves'):
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] / R[str(header['header_format'])][str(header['phase_res'])]
     elif (type == 'meter'):
-        print(header['wavelength_in'])
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
+    else:
+        raise Exception('Type must be waves or meter')
 
 
 def get_phase_img(path: str) -> np.ndarray:
@@ -151,6 +147,20 @@ def get_phase_img(path: str) -> np.ndarray:
     """
     return decod_phase_img(header_reader(path))
 
+
+def get_meter_img(path: str) -> np.ndarray:
+    """Take a path to a .dat file and return the picture in meter
+
+    Args:
+        path (str): path to .dat file
+
+    Returns:
+        np.array: picture
+    """
+
+    header = header_reader(path)
+    phase_img = decod_phase_img(header)
+    return convert(header, phase_img, 'meter')
 
 
 

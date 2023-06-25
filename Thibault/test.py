@@ -1,9 +1,8 @@
-import icp_demo
 import pycpd as cpd
-import time
+# import time
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy as scp
+# import scipy as scp
 
 img_fix = plt.imread('data\logocolore.png').mean(axis = 2) #logo de base
 img_r = plt.imread('data\logorotate.png').mean(axis = 2) # logo tourné

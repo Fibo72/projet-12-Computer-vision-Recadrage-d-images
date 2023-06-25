@@ -49,8 +49,12 @@ class SideBar(tk.Frame):
     def draw_toggle(self, event=None):
         if self.workspace.mode == "DRAW":
             self.workspace.mode = "BLANK"
-        self.master.config(cursor="arrow") # type: ignore
-        self.workspace.mode = "DRAW"
+        else :
+            if self.workspace.mode == "PROFILE":
+                self.workspace.draw_image()
+                self.canvas.ProfileTool.points = [] # type: ignore
+            self.master.config(cursor="arrow") # type: ignore
+            self.workspace.mode = "DRAW"
 
     def clear_points(self, event=None):
         if askyesno("Attention","Etes-vous sûr(e) de vouloir supprimer tous les points ?"):
@@ -63,6 +67,11 @@ class SideBar(tk.Frame):
             self.master.config(cursor="arrow") # type: ignore
             self.workspace.mode = "BLANK"
         else:
+            if self.workspace.mode == "PROFILE":
+                pass
+                #self.workspace.draw_image()
+                #self.canvas.ProfileTool.points = [] # type: ignore
+                
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "DRAG"
 
@@ -71,6 +80,9 @@ class SideBar(tk.Frame):
             self.master.config(cursor="arrow") # type: ignore
             self.workspace.mode = "BLANK"
         else:
+            if self.workspace.mode == "PROFILE":
+                self.workspace.draw_image()
+                self.canvas.ProfileTool.points = [] # type: ignore
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "MODIF"        
 
@@ -79,7 +91,9 @@ class SideBar(tk.Frame):
             self.master.config(cursor="arrow") # type: ignore
             self.workspace.mode = "BLANK"
             self.workspace.draw_image()
+            self.canvas.ProfileTool.points = [] # type: ignore
         else:
+            self.canvas.hide_points() # type: ignore
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "PROFILE"  
 

@@ -1,17 +1,27 @@
-from tkinter import *
+increment = {"Right" : (1, 0), "Left" : (-1, 0), "Up" : (0, -1), "Down" : (0, 1)}
+
 
 class PointsModifier:
     def __init__(self, canvas, workspace):
         self.canvas = canvas
         self.workspace = workspace
         
-        # self.canvas.bind("<Up>", self.canvas.remove_last)
+        self.canvas.bind_all("<Right>", self.move_all_points)
+        self.canvas.bind_all("<Left>", self.move_all_points)
+        self.canvas.bind_all("<Up>", self.move_all_points)
+        self.canvas.bind_all("<Down>", self.move_all_points)
 
     def click(self, mouse_coord, points_object, mouse_off):
         
         if len(points_object) > 0:
             self.points_object = points_object
             self.active_point = self.find_closest_point(mouse_coord, mouse_off)
+    
+    def move_all_points(self, event):
+        key = event.keysym
+        
+        
+        increment[key]
 
     def move_point(self, coord):
         x, y = coord

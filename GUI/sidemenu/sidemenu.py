@@ -22,7 +22,7 @@ class SideMenu:
         self.workspace = workspace
 
         self.frame_upper = tk.Frame(self.frame, height = 200, width=self.width)
-        self.widgets.append(ttk.Label(self.frame_upper, text="Image list"))
+        self.widgets.append(ttk.Label(self.frame_upper, text="Images"))
         self.name = tk.Variable()
         self.image_list = tk.Listbox(self.frame_upper, listvariable=self.name, height=3, selectmode="SINGLE") #just like me :(
         self.image_list.bind("<<ListboxSelect>>", self.switch_image)
