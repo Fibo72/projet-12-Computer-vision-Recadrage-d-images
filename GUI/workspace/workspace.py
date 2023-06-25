@@ -39,7 +39,7 @@ class WorkSpace(tk.Frame):
         self.sidebar.link_side_menu(side_m)
         self.side_m = side_m
 
-    def draw_image(self):
+    def draw_image(self, with_points=True):
         i = self.current
 
         self.canvas.delete('all')
@@ -51,9 +51,8 @@ class WorkSpace(tk.Frame):
 
         self.current_image = self.canvas.create_image(0, 0, anchor='nw', image=self.image_tk_list[i])
         self.canvas.coords(self.current_image, 0, 0)
-        self.canvas.draw_points()
-
-        print(self.image_list)
+        if with_points:
+            self.canvas.draw_points()
 
     def enable_button(self):
         for button in self.sidebar.button_list:
@@ -69,5 +68,3 @@ class WorkSpace(tk.Frame):
                         last = self.points_objects[i].pop()
                         self.canvas.delete(last)
         self.side_m.update_name(self.current, len(self.points[self.current]))
-
-#TODO : fix le "re"dessin des chiffres.

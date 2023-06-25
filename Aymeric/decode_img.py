@@ -49,7 +49,6 @@ def header_reader(path: str) -> dict:
     return header
 
 
-
 def decod_phase_img(header: dict) ->np.ndarray:
     """Take the header of data and return a picture in meter
 
@@ -141,7 +140,8 @@ def encode(header: dict, itensity_img: np.ndarray, org_intensity : np.ndarray, p
 
     file.close()
 
-def convert(header, phase_img, type):
+
+def convert(header, phase_img, type) -> np.ndarray:
     """Convert the phase image in meter or waves"""
     R = {
         '1': {
@@ -162,8 +162,9 @@ def convert(header, phase_img, type):
     if (type == 'waves'):
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] / R[str(header['header_format'])][str(header['phase_res'])]
     elif (type == 'meter'):
-        print(header['wavelength_in'])
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
+    else:
+        raise Exception('Type must be waves or meter')
 
 def get_img(path: str, type : str) -> np.ndarray:
     """Take a path to a .dat file and return the picture in meter

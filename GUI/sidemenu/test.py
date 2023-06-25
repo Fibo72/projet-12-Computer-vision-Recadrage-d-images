@@ -26,7 +26,6 @@ class SegmentDrawer:
         else :
             self.active_point = self.find_closest_point(event)
 
-
     def move_point(self, event):
         if self.segment is not None and self.active_point is not None:
             self.canvas.coords(self.active_point, event.x-5, event.y-5, event.x+5, event.y+5)

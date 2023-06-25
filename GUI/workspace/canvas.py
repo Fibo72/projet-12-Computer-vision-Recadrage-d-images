@@ -1,11 +1,16 @@
 import tkinter as tk
 from GUI.settings import *
+from GUI.workspace.points_modif import PointsModifier
+from GUI.workspace.profil import Profile
 
 class MyCanvas(tk.Canvas):
     def __init__(self, workspace, master, side_m, **kwargs):
         super().__init__(master, **kwargs)
         self.workspace = workspace
         self.side_menu = side_m
+
+        self.ModifTool = PointsModifier(self, self.workspace)
+        self.ProfileTool = Profile(self, self.workspace)
 
         self.drag_on = False
 
@@ -36,7 +41,9 @@ class MyCanvas(tk.Canvas):
                                                                         x_off + x + 3, 
                                                                         y_off + y + 3, 
                                                                         fill=COLOR[point_number%3]))
-                self.create_text(x + 10, y - 10, text = str(point_number + 1), fill=COLOR[point_number%3], font="Arial 12 bold")
+                self.create_text(x_off + x + 10,
+                                 y_off + y - 10, 
+                                 text = str(point_number + 1), fill=COLOR[point_number%3], font="Arial 12 bold")
                 
                 self.side_menu.update_name(self.workspace.current, len(self.workspace.points[i]))
             
@@ -44,6 +51,14 @@ class MyCanvas(tk.Canvas):
                 self.drag_on = True
                 self.scan_mark(x, y)
                 self.drag_start = [x, y]
+            
+            elif self.workspace.mode == "MODIF":
+                x_off, y_off = self.canvasx(0), self.canvasy(0)
+                self.ModifTool.click((x,y), self.workspace.points_objects[i], (x_off, y_off))
+
+            elif self.workspace.mode == "PROFILE":
+                x_off, y_off = self.canvasx(0), self.canvasy(0)
+                self.ProfileTool.click((x,y), (x_off, y_off))
         
     def move(self,event):
         x = event.x
@@ -51,13 +66,26 @@ class MyCanvas(tk.Canvas):
 
         if self.workspace.mode == "DRAG" and self.drag_on:
             self.scan_dragto(x, y, gain=1)
+        
+        elif self.workspace.mode == "MODIF":
+            self.ModifTool.move_point((x,y))
+        
+        elif self.workspace.mode == "PROFILE":
+            self.ProfileTool.move((x,y))
 
     def release(self, event):
         x = event.x
         y = event.y
 
         if self.workspace.mode == "DRAG" and self.drag_on:
-            self.drag_on = False   
+            self.drag_on = False
+        
+        elif self.workspace.mode == "MODIF":
+            self.ModifTool.active_point = None
+            self.workspace.draw_image()
+
+        elif self.workspace.mode == "PROFILE":
+            self.ProfileTool.release_point()
 
     def remove_last(self,event=None):
         i = self.workspace.current
@@ -85,7 +113,14 @@ class MyCanvas(tk.Canvas):
                                                                          -y_off + (y+0.5)*coeff + 3,
                                                                          fill=COLOR[k%3]))
                 self.create_text(-x_off + (x+0.5)*coeff + 10, -y_off + (y+0.5)*coeff - 10, text = str(k+1), fill=COLOR[k], font="Arial 12 bold")
-    
+
+    def hide_points(self):
+        i = self.workspace.current
+        for point in self.workspace.points_objects[i]:
+            self.delete(point)
+        self.workspace.points_objects[i] = []
+        self.workspace.draw_image(with_points=False)
+ 
     def on_the_image(self, x, y, i):
         x_t = x + self.canvasx(0)
         y_t = y + self.canvasy(0)

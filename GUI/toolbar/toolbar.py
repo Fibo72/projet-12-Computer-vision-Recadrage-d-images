@@ -9,6 +9,7 @@ import os
 from GUI.toolbar.toolbar_functions import *
 from GUI.settings import *
 from GUI.toolbar.option_menus.menus_handler import MenusHandler
+from GUI.toolbar.saveloadhandler import SaveLoadHandler
 
 class Toolbar(tk.Frame):
     def __init__(self, master, workspace, side_m):
@@ -16,18 +17,20 @@ class Toolbar(tk.Frame):
         self.master = master
         self.workspace = workspace
         self.side_m = side_m
+        self.manager = SaveLoadHandler(self)
 
         self.menuHandler = MenusHandler(self.master, self)
         
         file_button = initiate("Fichier", 
-                               ["Nouvelle image", "Nouveau set"], 
-                               [self.load_image, 
-                                self.load_set], self)
+                               ["Nouveau set", "Charger projet", "Sauvegarder projet", "Exporter"], 
+                               [self.load_set, self.load_set, self.save_points, lambda : print('to bind')
+                                ], self)
         file_button.button.pack(side="left", padx=(2,0))
 
         edit_button = initiate("Edition",
-                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)"],
+                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)", "Réinitialiser"],
                                [lambda : print("to bind"), 
+                                lambda : print('to bind'),
                                 lambda : print('to bind')], self)
         edit_button.button.pack(side="left")
 
@@ -41,9 +44,15 @@ class Toolbar(tk.Frame):
 
     def update_attributes(self, workspace, side_m):
         self.workspace = workspace
+
+
+
         self.side_m = side_m
 
     def load_image(self):
+        """
+        useful for testint, useless for common use
+        """
         try :
             file_path = filedialog.askopenfilename()
         except:
@@ -55,6 +64,7 @@ class Toolbar(tk.Frame):
             if file_path.endswith('.dat'):
                 self.workspace.reinit()
                 self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path)*255, mode='L'))
+                #TODO: add a line to store the in-meter image
                 self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
                 self.workspace.h.append(self.workspace.image_list[0].height)
                 self.workspace.w.append(self.workspace.image_list[0].width)
