@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json 
 
-
+#Lecture image
 def header_reader(path: str) -> dict:
     """Take a .dat file from MetroPro and return the heder decoded
 
@@ -32,7 +32,7 @@ def header_reader(path: str) -> dict:
     header['ac_n_bucket'] = int.from_bytes(data[56:58], "big")
     header['ac_range'] = int.from_bytes(data[58:60], "big")
     header['ac_n_bytes'] = int.from_bytes(data[60:64], "big")
-    header['itensity_raw'] = data[header['header_size']: header['header_size'] + header['ac_n_bytes']]
+    header['intensity_raw'] = data[header['header_size']: header['header_size'] + header['ac_n_bytes']]
 
     header['cn_org_x'] = int.from_bytes(data[64:66], "big")
     header['cn_org_y'] = int.from_bytes(data[66:68], "big")
@@ -40,7 +40,6 @@ def header_reader(path: str) -> dict:
     header['cn_height'] = int.from_bytes(data[70:72], "big")
     header['cn_n_bytes'] = int.from_bytes(data[72:76], "big")
     header['intf_scale_factor'] = struct.unpack('f',data[167:163:-1])[0]
-    print(data[168:172])
     header['wavelength_in'] = struct.unpack('f',data[171:167:-1])[0]
     header['obliquity_factor'] = struct.unpack('f',data[179:175:-1])[0]
     header['phase_res'] = int.from_bytes(data[218:220], "big")
@@ -65,43 +64,73 @@ def decod_phase_img(header: dict) ->np.ndarray:
 
     for i in range(0,header['cn_n_bytes'],4):
         val = int.from_bytes(header['phase_raw'][i:i+4], "big", signed = True)
+
         if (abs(val) < 0x7FFFFFF8):
             img.append(val)
         else :
             img.append(0)
+
     img = np.array(img)
     img_threshold = (img-np.min(img))
     pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['cn_height'],header['cn_width'])).astype(np.uint8)
     return pic
 
+def decod_intensity_img(header: dict) ->np.ndarray:
+    """Take the header of data and return a picture in meter
 
-def encode(header: dict, itensity_img: np.ndarray, phase_img : np.ndarray, path: str, name: str):
+    Args:
+        header (dict): Header of the data
+
+    Returns:
+        np.array: picture
+    """
+    img = []
+
+
+    for i in range(0, header['ac_n_bytes'], 2):
+
+        val = int.from_bytes(header['intensity_raw'][i:i+2], "big", signed = True)
+
+        if (abs(val) < header['ac_range']):
+            img.append(val)
+        else :
+            img.append(0xFFFF)
+
+    img = np.array(img)
+    img_threshold = (img-np.min(img))
+    pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['ac_height'],header['ac_width'], header['ac_n_bucket'])).astype(np.uint8)
+    return pic
+
+def encode(header: dict, itensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str):
     """Encode the header and the picture in a .dat file"""
-
-    intensity_img = np.reshape(itensity_img, (header['ac_height']*header['ac_width']))
-    phase_img = np.reshape(phase_img, (header['cn_height']*header['cn_width']))
+    ac_height, ac_width = itensity_img.shape
+    cn_height, cn_width = phase_img.shape
+    intensity_img = np.reshape(itensity_img, ac_height*ac_width)
+    phase_img = np.reshape(phase_img, cn_height*cn_width)
 
 
     file = open(f"{path + name}.dat", 'wb')
     file.write(header['magic_number'].to_bytes(4, "big"))
     file.write(header['header_format'].to_bytes(2, "big"))
     file.write(header['header_size'].to_bytes(4, "big"))
-    file.write(header['ac_org_x'].to_bytes(2, "big"))
-    file.write(header['ac_org_y'].to_bytes(2, "big"))
-    file.write(header['ac_width'].to_bytes(2, "big"))
-    file.write(header['ac_height'].to_bytes(2, "big"))
+
+    
+    file.write((org_intensity[0]).to_bytes(2, "big"))
+    file.write((org_intensity[1]).to_bytes(2, "big"))
+    file.write(ac_width.to_bytes(2, "big"))
+    file.write(ac_height.to_bytes(2, "big"))
     file.write(header['ac_n_bucket'].to_bytes(2, "big"))
-    file.write(header['ac_range'].to_bytes(2, "big"))
-    file.write(header['ac_n_bytes'].to_bytes(4, "big"))
+    file.write(np.max(intensity_img).to_bytes(2, "big"))
+    file.write((ac_height*ac_width*header['ac_n_bucket']*2).to_bytes(4, "big"))
     
-    for i in range(header['ac_n_bytes']):
-        file.write(itensity_img[i].to_bytes(1, "big"))
+    for i in range((ac_height*ac_width*header['ac_n_bucket']*2)):
+        file.write(intensity_img[i].to_bytes(1, "big"))
     
-    file.write(header['cn_org_x'].to_bytes(2, "big"))
-    file.write(header['cn_org_y'].to_bytes(2, "big"))
-    file.write(header['cn_width'].to_bytes(2, "big"))
-    file.write(header['cn_height'].to_bytes(2, "big"))
-    file.write(header['cn_n_bytes'].to_bytes(4, "big"))
+    file.write((org_phase[0]).to_bytes(2, "big"))
+    file.write((org_phase[0]).to_bytes(2, "big"))
+    file.write(cn_width.to_bytes(2, "big"))
+    file.write(cn_height.to_bytes(2, "big"))
+    file.write((cn_height*cn_width*8).to_bytes(4, "big"))
     file.write(header['intf_scale_factor'].to_bytes(4, "big"))
     file.write(header['wavelength_in'].to_bytes(4, "big"))
     file.write(header['obliquity_factor'].to_bytes(4, "big"))
@@ -111,10 +140,6 @@ def encode(header: dict, itensity_img: np.ndarray, phase_img : np.ndarray, path:
         file.write(phase_img[i].to_bytes(1, "big"))
 
     file.close()
-
-
-
-
 
 def convert(header, phase_img, type):
     """Convert the phase image in meter or waves"""
@@ -140,20 +165,55 @@ def convert(header, phase_img, type):
         print(header['wavelength_in'])
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
 
-
-def get_phase_img(path: str) -> np.ndarray:
+def get_img(path: str, type : str) -> np.ndarray:
     """Take a path to a .dat file and return the picture in meter
 
     Args:
         path (str): path to .dat file
+        type (str): type of the img
 
     Returns:
         np.array: picture
+        if type == 'intensity' : img.shape = (header['ac_height'],header['ac_width'], header['ac_n_bucket'])
+        if type == 'phase' : img.shape = (header['cn_height'],header['cn_width'])
     """
-    return decod_phase_img(header_reader(path))
+    if type == 'intensity':
+        return decod_intensity_img(header_reader(path))
+    elif type == 'phase':
+        return decod_phase_img(header_reader(path))
+    else :
+        raise Exception("Type not found")
 
+def get_org_img(header : dict, type : str) -> np.ndarray:
+    '''Return the org of a img
+    Args:
+        header (dict): header of the img
+        type (str): type of the img
+        Returns:
+            np.ndarray: org of the img 
+                if type == 'intensity' : org = np.array(x,y,z) for each bucket the org.shape = (3, header['ac_n_bucket'])
+                if type == 'phase' : org = np.array(x,y,z) the org.shape = (3,1)'''
 
+    x,y,z = 0,0,0
 
+    if type == 'intensity':
+        org = np.empty((3, header['ac_n_bucket']))
+        x,y = header['ac_org_x'], header['ac_org_y']
+        img = decod_intensity_img(header)
+
+        
+        for i in range(header['ac_n_bucket']):
+            z = img[x, y, i]
+            org[:,i] = [x,y,z]
+        return org
+    
+    elif type == 'phase':
+        x,y = header['cn_org_x'], header['cn_org_y']
+        img = decod_phase_img(header)
+        z = img[x,y]
+        return np.array([[x],[y],[z]])
+    
+    raise Exception("Type not found")
 
 def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: int, out_path: str, comment: str)->None:
     """Generate a json file to crop images
@@ -182,8 +242,7 @@ def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: 
     with open(path_dict, "w") as f:
         json.dump(load_dict, f, indent=4)
 
-
-
+#truc random
 def prof_topo(A,B, img):
     """Return the profile of the topography
 
@@ -209,15 +268,23 @@ def prof_topo(A,B, img):
 
     return X, Y, prof
 
-
-if  __name__ == "__main__":
-    a = None
-
-
 if (__name__ == '__main__'):
+    for i in range(1, 8):
+        header = header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat')
+        print(i, header['ac_n_bucket'])
+        tab = get_img(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat', 'intensity')
+        org = get_org_img(header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat'), 'intensity')
 
+        plt.figure()
+        plt.imshow(tab, cmap = 'gray')
+        plt.plot(org[0, 0], org[1, 0], 'ro')
+        plt.show()
 
-    tab = get_phase_img('data//CALSPAR16C_init-to-d7//CALSPAR16C_d4_image1-5x.dat')
-    plt.figure()
-    plt.imshow(tab, cmap = 'gray')
-    plt.show()
+        tab = get_img(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat', 'phase')
+        org = get_org_img(header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat'), 'phase')
+
+        plt.figure()
+        plt.imshow(tab, cmap = 'gray')
+        plt.plot(org[0, 0], org[1, 0], 'ro')
+        plt.show()
+        
