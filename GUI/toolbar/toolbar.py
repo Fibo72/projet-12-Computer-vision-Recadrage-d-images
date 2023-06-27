@@ -6,10 +6,11 @@ from PIL import Image, ImageTk
 
 import os
 
-from GUI.toolbar.toolbar_functions import *
 from GUI.settings import *
 from GUI.toolbar.option_menus.menus_handler import MenusHandler
 from GUI.toolbar.saveloadhandler import SaveLoadHandler
+from GUI.toolbar.drop_menu import DropMenu
+from GUI.toolbar.compute.compute import Computer
 
 class Toolbar(tk.Frame):
     def __init__(self, master, workspace, side_m):
@@ -17,37 +18,40 @@ class Toolbar(tk.Frame):
         self.master = master
         self.workspace = workspace
         self.side_m = side_m
+
         self.manager = SaveLoadHandler(self)
-
         self.menuHandler = MenusHandler(self.master, self)
+        self.computer = Computer(master)
         
-        file_button = initiate("Fichier", 
-                               ["Nouveau set", "Charger projet", "Sauvegarder projet", "Exporter"], 
-                               [self.load_set, self.load_set, self.save_points, lambda : print('to bind')
-                                ], self)
-        file_button.button.pack(side="left", padx=(2,0))
+        self.file_button = DropMenu("Fichier", self)
+        self.file_button.button.pack(side="left", padx=(1,0))
 
-        edit_button = initiate("Edition",
-                               ["Annuler (Ctrl + Z)", "Rétablir (Ctrl + Y)", "Réinitialiser"],
-                               [lambda : print("to bind"), 
-                                lambda : print('to bind'),
-                                lambda : print('to bind')], self)
-        edit_button.button.pack(side="left")
+        self.edit_button = DropMenu("Edition", self)
+        self.edit_button.button.pack(side="left", padx=(1,0))
 
-        config_button = initiate("Configuration",
-                                ["Recadrage", "Échelles", "Color Map", "Points"],
-                                [lambda : print("to bind"), 
-                                 lambda : print("to bind"), 
-                                 lambda : print('to bind'), 
-                                 self.menuHandler.createPointsMenu], self)
-        config_button.button.pack(side="left")
+        self.config_button = DropMenu("Configuration", self)
+        self.config_button.button.pack(side="left", padx=(1,0))
 
-    def update_attributes(self, workspace, side_m):
+        self.calcul_button = DropMenu("Calculs", self)
+        self.calcul_button.button.pack(side="left", padx=(1,0))
+
+
+    def link_to(self, workspace, side_m):
         self.workspace = workspace
-
-
-
         self.side_m = side_m
+
+        self.file_button.add_commands(["Nouvelle image", "Nouveau set"],
+                                       [self.load_image, self.load_set])
+        
+        self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
+                                       [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
+        
+        self.config_button.add_commands(["Échelles", "Color Map", "Points"], 
+                                        [lambda : print("to bind")]*2 + [self.menuHandler.createPointsMenu])
+        
+        self.calcul_button.add_commands(["Recadrage", "Profil"], 
+                                        [self.menuHandler.createRecadrageMenu]+ [lambda : print("to bind")])
+
 
     def load_image(self):
         """
@@ -116,14 +120,14 @@ class Toolbar(tk.Frame):
 
                     if file_path.endswith('.dat'):
                         self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path), mode='L'))
-                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
+                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[-1]))
                         self.workspace.h.append(self.workspace.image_list[j].height)
                         self.workspace.w.append(self.workspace.image_list[j].width)
                         #self.workspace.offset.append([0,0])
 
                     elif check_file_format(file_path):
                         self.workspace.image_list.append(Image.open(file_path))
-                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
+                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[j]))
                         self.workspace.h.append(self.workspace.image_list[j].height)
                         self.workspace.w.append(self.workspace.image_list[j].width)
                         #self.workspace.offset.append([0,0])

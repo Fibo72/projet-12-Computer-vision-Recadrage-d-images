@@ -19,7 +19,7 @@ COLOR = ['#5669ff','#ff2c64','#42eb00']
 def configure(master: tk.Tk):
     master.configure(bg="#dddddd")
     master.state("zoomed")
-    master.title("Rig Hollow")
+    master.title("REFrame")
     icon = tk.PhotoImage(file='GUI/picture/logo.png')
     master.iconphoto(True, icon)
 
