@@ -2,6 +2,7 @@ import struct
 import numpy as np
 import matplotlib.pyplot as plt
 import json 
+from Thibault.test import recadrage_cpd, format_img, apply_recadr
 
 #Lecture image
 def header_reader(path: str) -> dict:
@@ -216,7 +217,7 @@ def get_org_img(header : dict, type : str) -> np.ndarray:
     
     raise Exception("Type not found")
 
-def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: int, out_path: str, comment: str)->None:
+def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: int, out_path: str , comment: str)->None:
     """Generate a json file to crop images
 
     Args:
@@ -237,6 +238,7 @@ def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: 
         "img_dict": img_dict,
         "crop_number": crop_number,
         "out_path": out_path,
+        "origin_path": path_dict,
         "comment": comment
     }
 
@@ -245,6 +247,7 @@ def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: 
 
 #truc random
 def prof_topo(A,B, img):
+
     """Return the profile of the topography
 
     Args:
@@ -268,6 +271,57 @@ def prof_topo(A,B, img):
     prof = img[Y,X]
 
     return X, Y, prof
+
+
+
+def recadrage(path_dict : str):
+
+    with open(path_dict, "r") as f:
+        load_dict = json.load(f)
+    
+    img_dict = load_dict["img_dict"]
+    crop_number = load_dict["crop_number"]
+    out_path = load_dict["out_path"]
+    origin_path = load_dict["origin_path"]
+    comment = load_dict["comment"]
+
+    img_name = img_dict["img_name"]
+    p1 = img_dict["p1"]
+
+    # header_0 = header_reader(origin_path + img_name[crop_number])
+
+    img_phase_org = get_img(origin_path + img_name[crop_number], 'phase')
+    img_intensity_org = get_img(origin_path + img_name[crop_number], 'intensity')
+
+    img_phase_format_0 = format_img(img_phase_org)
+    #TODO faire avec les intensité (/!\ multi dimension PAS PRISE EN CHARGE PAR THIBAULT DONC FAIRE DOUBLE FOR)
+    x0 = p1[crop_number]
+    #TODO faire les origines 
+
+
+
+    for i in range(len(img_name)):
+        if i != crop_number:
+
+            header_i = header_reader(origin_path + img_name[i])
+
+            img_phase_i = get_img(origin_path + img_name[i], 'phase')
+            img_phase_format_i = format_img(img_phase_i)
+
+            x_i  = p1[i]
+            s, R, t = recadrage_cpd(x_i, x0)
+
+            img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
+            img_intensity_recadr_i = apply_recadr(img_intensity_org, s, R, t)
+            
+            encode(header_i, 
+                   img_intensity_recadr_i, np.array([0,0]), 
+                   img_phase_recadr_i,  np.array([0,0]),
+                   out_path, img_name[i])
+
+
+
+
 
 if (__name__ == '__main__'):
     for i in range(1, 8):
