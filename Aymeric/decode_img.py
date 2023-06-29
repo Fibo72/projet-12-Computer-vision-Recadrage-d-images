@@ -345,11 +345,18 @@ def recadrage(path_dict : str):
             for j in range(np.shape(x_i)[0]):
                 x_i_augm[j, 2] = img_phase_i[x_i[j,1], x_i[j,0]]
 
-            s, R, t = recadrage_cpd(x_i_augm, x0_augm)
 
+
+
+
+            s, R, t = recadrage_cpd(x_i_augm, x0_augm)
+            print(f"s = {s}, R = {R}, t = {t}")
+            
             img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
+
             img_intensity_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
             
+            print(img_intensity_recadr_i[img_intensity_recadr_i < 0])
             encode(header = header_i, 
                    intensity_img = img_intensity_recadr_i, org_intensity = np.array([0,0]), 
                    phase_img = img_phase_recadr_i, org_phase = np.array([0,0]),
