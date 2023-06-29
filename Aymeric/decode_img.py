@@ -101,11 +101,12 @@ def decod_intensity_img(header: dict) ->np.ndarray:
     pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['ac_height'],header['ac_width'], header['ac_n_bucket'])).astype(np.uint8)
     return pic
 
-def encode(header: dict, itensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str):
+def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str):
     """Encode the header and the picture in a .dat file"""
-    ac_height, ac_width = itensity_img.shape
+
+    ac_height, ac_width = intensity_img.shape[:2]
     cn_height, cn_width = phase_img.shape
-    intensity_img = np.reshape(itensity_img, ac_height*ac_width)
+    intensity_img = np.reshape(intensity_img, ac_height*ac_width)
     phase_img = np.reshape(phase_img, cn_height*cn_width)
 
 
@@ -314,15 +315,15 @@ def recadrage(path_dict : str):
             img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
             img_intensity_recadr_i = apply_recadr(img_intensity_org, s, R, t)
             
-            encode(header_i, 
-                   img_intensity_recadr_i, np.array([0,0]), 
-                   img_phase_recadr_i,  np.array([0,0]),
-                   out_path, img_name[i])
+            encode(header = header_i, 
+                   intensity_img = img_intensity_recadr_i, org_intensity = np.array([0,0]), 
+                   phase_img = img_phase_recadr_i, org_phase = np.array([0,0]),
+                   path = out_path, name = img_name[i])
         else :
             encode(header_0, 
                    img_intensity_org, np.array([0,0]), 
-                   img_phase_format_0,  np.array([0,0]),
-                   out_path, img_name[i])
+                   img_phase_org,  np.array([0,0]),
+                   out_path, img_name[crop_number])
 
 
 
