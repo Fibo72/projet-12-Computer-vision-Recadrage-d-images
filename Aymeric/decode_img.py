@@ -288,7 +288,7 @@ def recadrage(path_dict : str):
     img_name = img_dict["img_name"]
     p1 = img_dict["p1"]
 
-    # header_0 = header_reader(origin_path + img_name[crop_number])
+    header_0 = header_reader(origin_path + img_name[crop_number])
 
     img_phase_org = get_img(origin_path + img_name[crop_number], 'phase')
     img_intensity_org = get_img(origin_path + img_name[crop_number], 'intensity')
@@ -317,6 +317,11 @@ def recadrage(path_dict : str):
             encode(header_i, 
                    img_intensity_recadr_i, np.array([0,0]), 
                    img_phase_recadr_i,  np.array([0,0]),
+                   out_path, img_name[i])
+        else :
+            encode(header_0, 
+                   img_intensity_org, np.array([0,0]), 
+                   img_phase_format_0,  np.array([0,0]),
                    out_path, img_name[i])
 
 
