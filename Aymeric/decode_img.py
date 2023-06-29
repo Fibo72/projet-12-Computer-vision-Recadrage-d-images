@@ -1,8 +1,8 @@
+from Thibault.test import recadrage_cpd, format_img, apply_recadr
 import struct
 import numpy as np
 import matplotlib.pyplot as plt
 import json 
-from Thibault.test import recadrage_cpd, format_img, apply_recadr
 
 #Lecture image
 def header_reader(path: str) -> dict:
@@ -61,14 +61,13 @@ def decod_phase_img(header: dict) ->np.ndarray:
     """
     img = []
 
-
     for i in range(0,header['cn_n_bytes'],4):
         val = int.from_bytes(header['phase_raw'][i:i+4], "big", signed = True)
 
         if (abs(val) < 0x7FFFFFF8):
             img.append(val)
         else :
-            img.append(0)
+            img.append(4)
 
     img = np.array(img)
     img_threshold = (img-np.min(img))
@@ -104,43 +103,66 @@ def decod_intensity_img(header: dict) ->np.ndarray:
 def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str):
     """Encode the header and the picture in a .dat file"""
 
-    ac_height, ac_width = intensity_img.shape[:2]
+    ac_height, ac_width = intensity_img.shape[:2] #TODO : gerer les buckets
     cn_height, cn_width = phase_img.shape
     intensity_img = np.reshape(intensity_img, ac_height*ac_width)
     phase_img = np.reshape(phase_img, cn_height*cn_width)
 
+    with open(f"{path + '/' + name}", 'wb') as file:
+        file.seek(0)
+        print(header['header_size'])
+        for i in range(header['header_size']):
+            file.write((0x00).to_bytes(1, "big"))
+        
+        file.seek(0)
+        file.write(header['magic_number'].to_bytes(4, "big"))
+        file.write(header['header_format'].to_bytes(2, "big"))
+        file.write(header['header_size'].to_bytes(4, "big"))
 
-    file = open(f"{path + name}.dat", 'wb')
-    file.write(header['magic_number'].to_bytes(4, "big"))
-    file.write(header['header_format'].to_bytes(2, "big"))
-    file.write(header['header_size'].to_bytes(4, "big"))
+        file.seek(48)
+        #origine
+        file.write(int(org_intensity[0]).to_bytes(2, "big"))
+        file.write(int(org_intensity[1]).to_bytes(2, "big"))
+        #dimensions
+        file.write(ac_width.to_bytes(2, "big")) #width
+        file.write(ac_height.to_bytes(2, "big")) #height
+        file.write(header['ac_n_bucket'].to_bytes(2, "big")) #n_bucket
+        #range
+        file.write(int(np.max(intensity_img)).to_bytes(2, "big"))
+        #n_bytes
+        file.write((ac_height*ac_width*header['ac_n_bucket']*4).to_bytes(4, "big"))
+        
+        #phase
+        file.seek(64)
+        #origine
+        file.write(int(org_phase[0]).to_bytes(2, "big"))
+        file.write(int(org_phase[0]).to_bytes(2, "big"))
+        #dimensions
+        file.write(cn_width.to_bytes(2, "big")) #width
+        file.write(cn_height.to_bytes(2, "big")) #height
+        file.write((cn_height*cn_width*4).to_bytes(4, "big")) #n_bytes
 
-    
-    file.write((org_intensity[0]).to_bytes(2, "big"))
-    file.write((org_intensity[1]).to_bytes(2, "big"))
-    file.write(ac_width.to_bytes(2, "big"))
-    file.write(ac_height.to_bytes(2, "big"))
-    file.write(header['ac_n_bucket'].to_bytes(2, "big"))
-    file.write(np.max(intensity_img).to_bytes(2, "big"))
-    file.write((ac_height*ac_width*header['ac_n_bucket']*2).to_bytes(4, "big"))
-    
-    for i in range((ac_height*ac_width*header['ac_n_bucket']*2)):
-        file.write(intensity_img[i].to_bytes(1, "big"))
-    
-    file.write((org_phase[0]).to_bytes(2, "big"))
-    file.write((org_phase[0]).to_bytes(2, "big"))
-    file.write(cn_width.to_bytes(2, "big"))
-    file.write(cn_height.to_bytes(2, "big"))
-    file.write((cn_height*cn_width*8).to_bytes(4, "big"))
-    file.write(header['intf_scale_factor'].to_bytes(4, "big"))
-    file.write(header['wavelength_in'].to_bytes(4, "big"))
-    file.write(header['obliquity_factor'].to_bytes(4, "big"))
-    file.write(header['phase_res'].to_bytes(2, "big"))
-    
-    for i in range(header['cn_n_bytes']):
-        file.write(phase_img[i].to_bytes(1, "big"))
+        file.seek(164)
+        file.write(struct.pack('f', header['intf_scale_factor']))
+        file.write(struct.pack('f', header['wavelength_in']))
 
-    file.close()
+        file.seek(176)
+        file.write(struct.pack('f', header['obliquity_factor']))
+
+        file.seek(218)
+        file.write(header['phase_res'].to_bytes(2, "big"))
+        
+        file.seek(header['header_size'] - 1)
+        intensity_img_line = np.reshape(intensity_img, (ac_height*ac_width*header['ac_n_bucket'], 1))
+        for i in range(ac_height*ac_width*header['ac_n_bucket']):
+            file.write(int(intensity_img_line[i]).to_bytes(4, "big"))
+        
+        
+        phase_img_line = np.reshape(phase_img, (cn_height*cn_width, 1))
+
+        for i in range(cn_height*cn_width):
+            file.write(int(phase_img_line[i]).to_bytes(4, "big"))
+
 
 
 def convert(header, phase_img, type) -> np.ndarray:
@@ -297,6 +319,12 @@ def recadrage(path_dict : str):
     img_phase_format_0 = format_img(img_phase_org)
     #TODO faire avec les intensité (/!\ multi dimension PAS PRISE EN CHARGE PAR THIBAULT DONC FAIRE DOUBLE FOR)
     x0 = p1[crop_number]
+    x0 = np.array(x0)
+
+    x0_augm = np.empty((np.shape(x0)[0],3))
+    x0_augm[:, :2] = x0
+    for i in range(np.shape(x0)[0]):
+        x0_augm[i, 2] = img_phase_org[x0[i,1], x0[i,0]]
     #TODO faire les origines 
 
 
@@ -310,10 +338,17 @@ def recadrage(path_dict : str):
             img_phase_format_i = format_img(img_phase_i)
 
             x_i  = p1[i]
-            s, R, t = recadrage_cpd(x_i, x0)
+            x_i = np.array(x_i)
+
+            x_i_augm = np.empty((np.shape(x_i)[0],3))
+            x_i_augm[:, :2] = x_i
+            for j in range(np.shape(x_i)[0]):
+                x_i_augm[j, 2] = img_phase_i[x_i[j,1], x_i[j,0]]
+
+            s, R, t = recadrage_cpd(x_i_augm, x0_augm)
 
             img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
-            img_intensity_recadr_i = apply_recadr(img_intensity_org, s, R, t)
+            img_intensity_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
             
             encode(header = header_i, 
                    intensity_img = img_intensity_recadr_i, org_intensity = np.array([0,0]), 
@@ -330,22 +365,5 @@ def recadrage(path_dict : str):
 
 
 if (__name__ == '__main__'):
-    for i in range(1, 8):
-        header = header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat')
-        print(i, header['ac_n_bucket'])
-        tab = get_img(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat', 'intensity')
-        org = get_org_img(header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat'), 'intensity')
-
-        plt.figure()
-        plt.imshow(tab, cmap = 'gray')
-        plt.plot(org[0, 0], org[1, 0], 'ro')
-        plt.show()
-
-        tab = get_img(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat', 'phase')
-        org = get_org_img(header_reader(f'data//CALSPAR16C_init-to-d7//CALSPAR16C_d{i}_image1-5x.dat'), 'phase')
-
-        plt.figure()
-        plt.imshow(tab, cmap = 'gray')
-        plt.plot(org[0, 0], org[1, 0], 'ro')
-        plt.show()
+    get_img('data//CALSPAR15C_init-to-d7//CALSPAR15C_d2_image1-5x.dat', 'phase')
         
