@@ -55,6 +55,9 @@ def format_img(img : np.ndarray) -> np.ndarray:
     """
     x, y = img.shape
     X , Y = np.indices(img.shape).reshape(2, -1)
+    
+    X = np.array(X)
+    Y = np.array(Y)
 
     X = X.reshape((x, y))
     Y = Y.reshape((x, y))
