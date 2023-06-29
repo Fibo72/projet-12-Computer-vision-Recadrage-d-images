@@ -26,6 +26,8 @@ class Computer():
         Apply the transformation (s,R,t) to the image and return the result.
         '''
         # TODO : apply the transformation
+        s, R, t = 0, 0, 0
+        return np.array([s, R, t])
     
     def process_transformations(self, images, factors):
         '''
@@ -37,8 +39,9 @@ class Computer():
         images_amount = len(images)
 
         for i in range(images_amount):
-            self.pb.update(i, images_amount)
+            
             transformed_images[i] = self.tranform_image(images[i], *factors[i])
+            self.pb.update(i, images_amount)
         
         self.pb.enable_button()
         return transformed_images

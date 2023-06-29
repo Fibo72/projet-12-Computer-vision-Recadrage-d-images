@@ -19,9 +19,10 @@ class Toolbar(tk.Frame):
         self.workspace = workspace
         self.side_m = side_m
 
-        self.manager = SaveLoadHandler(self)
+        self.manager = None
         self.menuHandler = MenusHandler(self.master, self)
         self.computer = Computer(master)
+        self.project_path = None
         
         self.file_button = DropMenu("Fichier", self)
         self.file_button.button.pack(side="left", padx=(1,0))
@@ -39,26 +40,27 @@ class Toolbar(tk.Frame):
     def link_to(self, workspace, side_m):
         self.workspace = workspace
         self.side_m = side_m
+        self.manager = SaveLoadHandler(self)
 
-        self.file_button.add_commands(["Nouvelle image", "Nouveau set"],
-                                       [self.load_image, self.load_set])
+        self.file_button.add_commands(["Nouvelle image", "Nouveau set", "Sauver le projet", "Charger un projet"],
+                                       [self.load_image, self.manager.load_set, self.manager.save_project, self.manager.load_project])
         
         self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
                                        [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
         
         self.config_button.add_commands(["Échelles", "Color Map", "Points"], 
-                                        [lambda : print("to bind")]*2 + [self.menuHandler.createPointsMenu])
+                                        [lambda : print("TODO")]*2 + [self.menuHandler.createPointsMenu])
         
         self.calcul_button.add_commands(["Recadrage", "Profil"], 
-                                        [self.menuHandler.createRecadrageMenu]+ [lambda : print("to bind")])
+                                        [self.menuHandler.createRecadrageMenu]+ [lambda : print("TODO")])
 
 
     def load_image(self):
         """
-        useful for testint, useless for common use
+        useful for testing, useless for common use
         """
         try :
-            file_path = filedialog.askopenfilename()
+            file_path = filedialog.askopenfilename(filetypes=[("DAT files", "*.dat")])
         except:
             pass
         else:
@@ -98,51 +100,51 @@ class Toolbar(tk.Frame):
                 self.workspace.draw_image()
                 self.workspace.enable_button()
     
-    def load_set(self):
-        try:
-            dir_path = filedialog.askdirectory()
-        except:
-            pass
-        else:
-            name_list = []
-            first_image = True
-            for j,file_name in enumerate(os.listdir(dir_path)):
+    # def load_set(self):
+    #     try:
+    #         dir_path = filedialog.askdirectory()
+    #     except:
+    #         pass
+    #     else:
+    #         name_list = []
+    #         first_image = True
+    #         for j,file_name in enumerate(os.listdir(dir_path)):
                 
 
-                file_path = os.path.join(dir_path, file_name)
+    #             file_path = os.path.join(dir_path, file_name)
 
-                if os.path.isfile(file_path):
-                    name_list.append(file_name[0:-4])
+    #             if os.path.isfile(file_path):
+    #                 name_list.append(file_name[0:-4])
 
-                    if first_image:
-                        self.workspace.reinit()
-                        first_image = False
+    #                 if first_image:
+    #                     self.workspace.reinit()
+    #                     first_image = False
 
-                    if file_path.endswith('.dat'):
-                        self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path), mode='L'))
-                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[-1]))
-                        self.workspace.h.append(self.workspace.image_list[j].height)
-                        self.workspace.w.append(self.workspace.image_list[j].width)
-                        #self.workspace.offset.append([0,0])
+    #                 if file_path.endswith('.dat'):
+    #                     self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path), mode='L'))
+    #                     self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[-1]))
+    #                     self.workspace.h.append(self.workspace.image_list[j].height)
+    #                     self.workspace.w.append(self.workspace.image_list[j].width)
+    #                     #self.workspace.offset.append([0,0])
 
-                    elif check_file_format(file_path):
-                        self.workspace.image_list.append(Image.open(file_path))
-                        self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[j]))
-                        self.workspace.h.append(self.workspace.image_list[j].height)
-                        self.workspace.w.append(self.workspace.image_list[j].width)
-                        #self.workspace.offset.append([0,0])
+    #                 elif check_file_format(file_path):
+    #                     self.workspace.image_list.append(Image.open(file_path))
+    #                     self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[j]))
+    #                     self.workspace.h.append(self.workspace.image_list[j].height)
+    #                     self.workspace.w.append(self.workspace.image_list[j].width)
+    #                     #self.workspace.offset.append([0,0])
 
 
-                    self.workspace.points.append([])
-                    self.workspace.points_objects.append([])
+    #                 self.workspace.points.append([])
+    #                 self.workspace.points_objects.append([])
             
-            if not(first_image):
-                self.side_m.update_list(name_list)
-                self.workspace.scale = get_scale(self.workspace.h, self.workspace.w,
-                                                self.workspace.canvas.winfo_height(),
-                                                self.workspace.canvas.winfo_width())
-                self.workspace.draw_image()
-                self.workspace.enable_button()
+    #         if not(first_image):
+    #             self.side_m.update_list(name_list)
+    #             self.workspace.scale = get_scale(self.workspace.h, self.workspace.w,
+    #                                             self.workspace.canvas.winfo_height(),
+    #                                             self.workspace.canvas.winfo_width())
+    #             self.workspace.draw_image()
+    #             self.workspace.enable_button()
 
     def enable_them_all(self, button_list):
         for button in button_list:

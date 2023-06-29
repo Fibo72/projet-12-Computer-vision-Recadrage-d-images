@@ -31,8 +31,7 @@ class RecadrageMenu(tk.Toplevel):
 
     def close(self, event=None):
         if int(self.var.get()) == 1:
-            #set ref to 1
-            print(1)
+            self.toolbar.workspace.ref_image = 0
             self.destroy()
             print('destroyed')
             #launch recadrage
@@ -46,7 +45,7 @@ class RecadrageMenu(tk.Toplevel):
                 if nb < 1 or nb > len(self.toolbar.workspace.image_list):
                     showinfo("Erreur de donnée", "Entrez un nombre valide.")
                 else :
-                    #set ref to nb
+                    self.toolbar.workspace.ref_image = nb - 1
                     print(nb)
                     self.destroy()
                     #launch recadrage

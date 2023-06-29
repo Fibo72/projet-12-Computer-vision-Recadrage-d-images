@@ -35,7 +35,9 @@ class MyCanvas(tk.Canvas):
                 coeff = self.workspace.scale[i]
                 x_off, y_off = self.canvasx(0), self.canvasy(0)
 
-                self.workspace.points[i].append((int((x_off + x) / coeff), int((y_off + y) / coeff)))
+                for k in range(len(self.workspace.points)):
+                    self.workspace.points[k].append((int((x_off + x) / coeff), int((y_off + y) / coeff)))
+
                 self.workspace.points_objects[i].append(self.create_oval(x_off + x - 3,
                                                                         y_off + y - 3,
                                                                         x_off + x + 3, 
@@ -45,7 +47,7 @@ class MyCanvas(tk.Canvas):
                                  y_off + y - 10, 
                                  text = str(point_number + 1), fill=COLOR[point_number%3], font="Arial 12 bold")
                 
-                self.side_menu.update_name(self.workspace.current, len(self.workspace.points[i]))
+                self.side_menu.update_name(0, len(self.workspace.points[i]))
             
             elif self.workspace.mode == "DRAG":
                 self.drag_on = True
@@ -112,7 +114,7 @@ class MyCanvas(tk.Canvas):
                                                                          -x_off + (x+0.5)*coeff + 3,
                                                                          -y_off + (y+0.5)*coeff + 3,
                                                                          fill=COLOR[k%3]))
-                self.create_text(-x_off + (x+0.5)*coeff + 10, -y_off + (y+0.5)*coeff - 10, text = str(k+1), fill=COLOR[k], font="Arial 12 bold")
+                self.create_text(-x_off + (x+0.5)*coeff + 10, -y_off + (y+0.5)*coeff - 10, text = str(k+1), fill=COLOR[k%3], font="Arial 12 bold")
 
     def hide_points(self):
         i = self.workspace.current

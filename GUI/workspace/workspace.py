@@ -24,13 +24,14 @@ class WorkSpace(tk.Frame):
     def reinit(self):
         self.image_list = []
         self.image_tk_list = []
+        self.name_list = []
         self.current = 0
+        self.ref_image = 0
         self.h = []
         self.w = []
         self.points, self.points_objects = [], []
         self.maxpoints = 3
         self.scale= []
-        #self.offset = []
         self.current_image = None
         self.mode = "BLANK"
 
