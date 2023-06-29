@@ -54,7 +54,10 @@ def format_img(img : np.ndarray) -> np.ndarray:
     Format an image to be used by the CPD algorithm.
     """
     x, y = img.shape
-    X , Y = np.where(img)
+    X , Y = np.indices(img.shape).reshape(2, -1)
+    
+    X = np.array(X)
+    Y = np.array(Y)
 
     X = X.reshape((x, y))
     Y = Y.reshape((x, y))
@@ -88,6 +91,7 @@ def apply_recadr(img, s,R,t):
     tab[YT[:, :, 0].astype(int), YT[:, :, 1].astype(int)] = YT[:, :, -1]
 
     return tab
+
 
 
 
