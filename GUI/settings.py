@@ -1,4 +1,3 @@
-from tkinter import ttk
 import tkinter as tk
 from tkinter.messagebox import showinfo
 
@@ -19,7 +18,7 @@ COLOR = ['#5669ff','#ff2c64','#42eb00']
 def configure(master: tk.Tk):
     master.configure(bg="#dddddd")
     master.state("zoomed")
-    master.title("Rig Hollow")
+    master.title("REFrame")
     icon = tk.PhotoImage(file='GUI/picture/logo.png')
     master.iconphoto(True, icon)
 
@@ -54,3 +53,16 @@ def get_scale(h,w,canvas_h,canvas_w):
     '''return scale rate'''
     scale = [min(canvas_h/h[i], canvas_w/w[i]) for i in range(len(h))]
     return scale
+
+#convert points format
+
+def format_points(points):
+    '''points : array of size (n,m,2)
+    return : list of lists of points in the format (x,y)'''
+    points_list = []
+    for i in range(len(points)):
+        points_list.append([])
+        for j in range(len(points[i])):
+            points_list[i].append((points[i][j][0], points[i][j][1]))
+    
+    return points_list

@@ -12,5 +12,5 @@ class MenusHandler():
         PointsMenu(self.master, self.toolbar)
     
     def createRecadrageMenu(self):
-        pass
+        RecadrageMenu(self.master, self.toolbar)
     

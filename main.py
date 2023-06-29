@@ -23,8 +23,9 @@ class App:
         self.side_menu = SideMenu(self.master, self.workspace)
         self.side_menu.frame.grid(row=1, column=2, sticky='ns')
 
+        #LINKING
         self.workspace.link_to(self.side_menu)
-        self.toolbar.update_attributes(self.workspace, self.side_menu)
+        self.toolbar.link_to(self.workspace, self.side_menu)
         
         root.grid_rowconfigure(1, weight=1)
         root.grid_columnconfigure(0, weight=1, minsize=42)

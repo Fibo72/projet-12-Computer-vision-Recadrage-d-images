@@ -21,6 +21,7 @@ def recadrage_cpd(img_fix, img_target, pt_fix, pt_target):
     reg = cpd.RigidRegistration(X =  pt_fix, Y = pt_target )
     TY, (s, R, t) = reg.register()
 
+    #compute the transformed image
     YT = s * np.dot(r, R) + t   
 
     YT[:,:,0] -= YT[:,:,0].min() 
