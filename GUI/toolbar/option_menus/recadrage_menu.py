@@ -34,7 +34,7 @@ class RecadrageMenu(tk.Toplevel):
             self.toolbar.workspace.ref_image = 0
             self.destroy()
             print('destroyed')
-            #launch recadrage
+            self.toolbar.computer.compute()
 
         else:
             try:
@@ -48,17 +48,14 @@ class RecadrageMenu(tk.Toplevel):
                     self.toolbar.workspace.ref_image = nb - 1
                     print(nb)
                     self.destroy()
-                    #launch recadrage
+                    self.toolbar.computer.compute()
 
     def sel(self):
         if int(self.var.get()) == 1:
-            pass
             #disable entry box
             self.entry.config(state=tk.DISABLED)
-            #set ref to 1
 
         elif int(self.var.get()) == 2:
-            pass
             #enable entry box
             self.entry.config(state=tk.NORMAL)
 

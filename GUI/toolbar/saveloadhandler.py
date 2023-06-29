@@ -1,4 +1,4 @@
-from Aymeric.decode_img import get_phase_img
+from Aymeric.decode_img import get_img
 from tkinter import filedialog
 from tkinter.messagebox import showwarning, showinfo
 from tkinter.messagebox import askyesno
@@ -50,7 +50,7 @@ class SaveLoadHandler():
                             self.workspace.reinit()
                             first_image = False
                             
-                        self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path), mode='L'))
+                        self.workspace.image_list.append(Image.fromarray(get_img(file_path, type="phase"), mode='L'))
                         self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
                         self.workspace.h.append(self.workspace.image_list[j].height)
                         self.workspace.w.append(self.workspace.image_list[j].width)
@@ -110,6 +110,7 @@ class SaveLoadHandler():
             with open(json_path, 'r') as f:
                 dict = json.load(f)
             
+            self.toolbar.project_path = json_path
             self.origin_path = dict["origin_path"]
             self.load_set(path=self.origin_path)
             self.workspace.points = format_points(dict["img_dict"]["p1"])

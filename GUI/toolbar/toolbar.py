@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-from Aymeric.decode_img import get_phase_img
+from Aymeric.decode_img import get_img
 
 from PIL import Image, ImageTk
 
@@ -21,7 +21,7 @@ class Toolbar(tk.Frame):
 
         self.manager = None
         self.menuHandler = MenusHandler(self.master, self)
-        self.computer = Computer(master)
+        self.computer = Computer(self)
         self.project_path = None
         
         self.file_button = DropMenu("Fichier", self)
@@ -43,7 +43,7 @@ class Toolbar(tk.Frame):
         self.manager = SaveLoadHandler(self)
 
         self.file_button.add_commands(["Nouvelle image", "Nouveau set", "Sauver le projet", "Charger un projet"],
-                                       [self.load_image, self.manager.load_set, self.manager.save_project, self.manager.load_project])
+                                       [print("à virer"), self.manager.load_set, self.manager.save_project, self.manager.load_project])
         
         self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
                                        [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
@@ -55,50 +55,50 @@ class Toolbar(tk.Frame):
                                         [self.menuHandler.createRecadrageMenu]+ [lambda : print("TODO")])
 
 
-    def load_image(self):
-        """
-        useful for testing, useless for common use
-        """
-        try :
-            file_path = filedialog.askopenfilename(filetypes=[("DAT files", "*.dat")])
-        except:
-            pass
-        else:
-            # Load image
-            image_to_display = False
+    # def load_image(self):
+    #     """
+    #     useful for testing, useless for common use
+    #     """
+    #     try :
+    #         file_path = filedialog.askopenfilename(filetypes=[("DAT files", "*.dat")])
+    #     except:
+    #         pass
+    #     else:
+    #         # Load image
+    #         image_to_display = False
 
-            if file_path.endswith('.dat'):
-                self.workspace.reinit()
-                self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path)*255, mode='L'))
-                #TODO: add a line to store the in-meter image
-                self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
-                self.workspace.h.append(self.workspace.image_list[0].height)
-                self.workspace.w.append(self.workspace.image_list[0].width)
+    #         if file_path.endswith('.dat'):
+    #             self.workspace.reinit()
+    #             self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path)*255, mode='L'))
+    #             #TODO: add a line to store the in-meter image
+    #             self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
+    #             self.workspace.h.append(self.workspace.image_list[0].height)
+    #             self.workspace.w.append(self.workspace.image_list[0].width)
 
-                image_to_display = True
-
-
-            elif check_file_format(file_path):
-                self.workspace.reinit()
-
-                self.workspace.image_list.append(Image.open(file_path))
-                self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
-                self.workspace.h.append(self.workspace.image_list[0].height)
-                self.workspace.w.append(self.workspace.image_list[0].width)
-
-                image_to_display = True
-
-            if image_to_display:
-                self.workspace.points.append([])
-                self.workspace.points_objects.append([])
+    #             image_to_display = True
 
 
-                self.workspace.scale = get_scale(self.workspace.h, self.workspace.w, 
-                                                 self.workspace.canvas.winfo_height(), 
-                                                 self.workspace.canvas.winfo_width())
-                self.side_m.update_list([file_path.split('/')[-1][0:-4]])
-                self.workspace.draw_image()
-                self.workspace.enable_button()
+    #         elif check_file_format(file_path):
+    #             self.workspace.reinit()
+
+    #             self.workspace.image_list.append(Image.open(file_path))
+    #             self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
+    #             self.workspace.h.append(self.workspace.image_list[0].height)
+    #             self.workspace.w.append(self.workspace.image_list[0].width)
+
+    #             image_to_display = True
+
+    #         if image_to_display:
+    #             self.workspace.points.append([])
+    #             self.workspace.points_objects.append([])
+
+
+    #             self.workspace.scale = get_scale(self.workspace.h, self.workspace.w, 
+    #                                              self.workspace.canvas.winfo_height(), 
+    #                                              self.workspace.canvas.winfo_width())
+    #             self.side_m.update_list([file_path.split('/')[-1][0:-4]])
+    #             self.workspace.draw_image()
+    #             self.workspace.enable_button()
     
     # def load_set(self):
     #     try:

@@ -288,10 +288,10 @@ def recadrage(path_dict : str):
     img_name = img_dict["img_name"]
     p1 = img_dict["p1"]
 
-    header_0 = header_reader(origin_path + img_name[crop_number])
+    header_0 = header_reader(origin_path + '/' + img_name[crop_number])
 
-    img_phase_org = get_img(origin_path + img_name[crop_number], 'phase')
-    img_intensity_org = get_img(origin_path + img_name[crop_number], 'intensity')
+    img_phase_org = get_img(origin_path +  '/' + img_name[crop_number], 'phase')
+    img_intensity_org = get_img(origin_path +  '/' + img_name[crop_number], 'intensity')
 
     img_phase_format_0 = format_img(img_phase_org)
     #TODO faire avec les intensité (/!\ multi dimension PAS PRISE EN CHARGE PAR THIBAULT DONC FAIRE DOUBLE FOR)
@@ -303,9 +303,9 @@ def recadrage(path_dict : str):
     for i in range(len(img_name)):
         if i != crop_number:
 
-            header_i = header_reader(origin_path + img_name[i])
+            header_i = header_reader(origin_path +  '/' + img_name[i])
 
-            img_phase_i = get_img(origin_path + img_name[i], 'phase')
+            img_phase_i = get_img(origin_path +  '/' + img_name[i], 'phase')
             img_phase_format_i = format_img(img_phase_i)
 
             x_i  = p1[i]
