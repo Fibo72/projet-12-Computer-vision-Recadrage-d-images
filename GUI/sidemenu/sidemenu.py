@@ -26,6 +26,8 @@ class SideMenu:
         self.name = tk.Variable()
         self.image_list = tk.Listbox(self.frame_upper, listvariable=self.name, height=3, selectmode="SINGLE") #just like me :(
         self.image_list.bind("<<ListboxSelect>>", self.switch_image)
+        self.image_list.bind_all("<Up>", self.switch_image)
+        self.image_list.bind_all("<Down>", self.switch_image)
         self.frame_upper.pack(side="top")
         
         self.widgets.append(self.image_list)
@@ -48,14 +50,25 @@ class SideMenu:
         self.name.set(list_2)
 
     def switch_image(self, event):
-        try:
-            self.workspace.current = self.image_list.curselection()[0]
-        except:
-            pass
-        else:
+        if event.keysym == "Up":
+            self.workspace.current = max(0, self.workspace.current-1)
             self.workspace.draw_image()
             self.workspace.canvas.xview_moveto(0)
             self.workspace.canvas.yview_moveto(0)
+        elif event.keysym == "Down":
+            self.workspace.current = min(len(self.workspace.image_list)-1, self.workspace.current+1)
+            self.workspace.draw_image()
+            self.workspace.canvas.xview_moveto(0)
+            self.workspace.canvas.yview_moveto(0)
+        else:
+            try:
+                self.workspace.current = self.image_list.curselection()[0]
+            except:
+                pass
+            else:
+                self.workspace.draw_image()
+                self.workspace.canvas.xview_moveto(0)
+                self.workspace.canvas.yview_moveto(0)
 
     def update_name(self, current, stage):
         if stage == 0:
