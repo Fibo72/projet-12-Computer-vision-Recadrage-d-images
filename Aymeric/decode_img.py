@@ -110,7 +110,7 @@ def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, 
 
     with open(f"{path + '/' + name}", 'wb') as file:
         file.seek(0)
-        print(header['header_size'])
+
         for i in range(header['header_size']):
             file.write((0x00).to_bytes(1, "big"))
         
@@ -121,8 +121,8 @@ def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, 
 
         file.seek(48)
         #origine
-        file.write(int(org_intensity[0]).to_bytes(2, "big"))
-        file.write(int(org_intensity[1]).to_bytes(2, "big"))
+        file.write(int(org_intensity[0, 0]).to_bytes(2, "big"))
+        file.write(int(org_intensity[1, 0]).to_bytes(2, "big"))
         #dimensions
         file.write(ac_width.to_bytes(2, "big")) #width
         file.write(ac_height.to_bytes(2, "big")) #height
@@ -135,8 +135,8 @@ def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, 
         #phase
         file.seek(64)
         #origine
-        file.write(int(org_phase[0]).to_bytes(2, "big"))
-        file.write(int(org_phase[0]).to_bytes(2, "big"))
+        file.write(int(org_phase[0, 0]).to_bytes(2, "big"))
+        file.write(int(org_phase[1, 0]).to_bytes(2, "big"))
         #dimensions
         file.write(cn_width.to_bytes(2, "big")) #width
         file.write(cn_height.to_bytes(2, "big")) #height
@@ -315,18 +315,17 @@ def recadrage(path_dict : str):
 
     img_phase_org = get_img(origin_path +  '/' + img_name[crop_number], 'phase')
     img_intensity_org = get_img(origin_path +  '/' + img_name[crop_number], 'intensity')
+    n_bucket = header_0['ac_n_bucket']
 
-    img_phase_format_0 = format_img(img_phase_org)
-    #TODO faire avec les intensité (/!\ multi dimension PAS PRISE EN CHARGE PAR THIBAULT DONC FAIRE DOUBLE FOR)
     x0 = p1[crop_number]
     x0 = np.array(x0)
 
     x0_augm = np.empty((np.shape(x0)[0],3))
     x0_augm[:, :2] = x0
-    for i in range(np.shape(x0)[0]):
-        x0_augm[i, 2] = img_phase_org[x0[i,1], x0[i,0]]
-    #TODO faire les origines 
-
+    x0_augm[:, 2] = img_phase_org[x0[:,1], x0[:,0]]
+    
+    org_phase_0 = get_org_img(header_0, 'phase')
+    org_intensity_0 = get_org_img(header_0, 'intensity')
 
 
     for i in range(len(img_name)):
@@ -335,36 +334,58 @@ def recadrage(path_dict : str):
             header_i = header_reader(origin_path +  '/' + img_name[i])
 
             img_phase_i = get_img(origin_path +  '/' + img_name[i], 'phase')
-            img_phase_format_i = format_img(img_phase_i)
-
+            img_intensity_i = get_img(origin_path +  '/' + img_name[i], 'intensity')
+            
+            # org_intensity_i = get_org_img(header_i, 'intensity')
+            # org_phase_i = get_org_img(header_i, 'phase')
+            
             x_i  = p1[i]
             x_i = np.array(x_i)
 
             x_i_augm = np.empty((np.shape(x_i)[0],3))
             x_i_augm[:, :2] = x_i
-            for j in range(np.shape(x_i)[0]):
-                x_i_augm[j, 2] = img_phase_i[x_i[j,1], x_i[j,0]]
-
-
-
+            x_i_augm[:, 2] = img_phase_i[x_i[:,1], x_i[:,0]]
 
 
             s, R, t = recadrage_cpd(x_i_augm, x0_augm)
-            print(f"s = {s}, R = {R}, t = {t}")
-            
-            img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
 
-            img_intensity_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
+
             
-            print(img_intensity_recadr_i[img_intensity_recadr_i < 0])
+            img_phase_format_i = format_img(img_phase_i)
+            img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
+            # org_phase_recadr_i = s*np.dot(R, org_phase_i) + t
+            org_phase_recadr_i = np.zeros((np.shape(org_phase_0)[0], np.shape(org_phase_0)[1], n_bucket))
+
+
+
+        
+            img_intensity_i_0 = format_img(img_intensity_i[:,:,0])
+            img_intensity_recadr_i_0 = apply_recadr(img_intensity_i_0, s, R, t)
+            # org_intensity_recadr_i = s*np.dot(R, org_intensity_i) + t
+            org_intensity_recadr_i = np.zeros((np.shape(org_intensity_0)[0], np.shape(org_intensity_0)[1], n_bucket))
+
+            img_intensity_recadr_i = np.empty((np.shape(img_intensity_recadr_i_0)[0], np.shape(img_intensity_recadr_i_0)[1], n_bucket))
+            img_intensity_recadr_i[:,:,0] = img_intensity_recadr_i_0
+            
+            for k in range(1, n_bucket):
+
+                img_intensity_i_k = format_img(img_intensity_i[:,:,k])
+                img_intensity_recadr_i_k = apply_recadr(img_intensity_i_k, s, R, t)
+                img_intensity_recadr_i[:,:,k] = img_intensity_recadr_i_k
+
+
             encode(header = header_i, 
-                   intensity_img = img_intensity_recadr_i, org_intensity = np.array([0,0]), 
-                   phase_img = img_phase_recadr_i, org_phase = np.array([0,0]),
+                   intensity_img = img_intensity_recadr_i, org_intensity = org_intensity_recadr_i, 
+                   phase_img = img_phase_recadr_i, org_phase = org_phase_recadr_i,
                    path = out_path, name = img_name[i])
+            
+            # print(org_intensity_recadr_i, org_phase_recadr_i)
         else :
+
+            # print(org_intensity_0, org_phase_0)
             encode(header_0, 
-                   img_intensity_org, np.array([0,0]), 
-                   img_phase_org,  np.array([0,0]),
+                   img_intensity_org, org_intensity_0, 
+                   img_phase_org,  org_phase_0,
                    out_path, img_name[crop_number])
 
 
