@@ -268,7 +268,6 @@ def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: 
     with open(path_dict, "w") as f:
         json.dump(load_dict, f, indent=4)
 
-#truc random
 def prof_topo(A,B, img):
 
     """Return the profile of the topography
@@ -294,8 +293,6 @@ def prof_topo(A,B, img):
     prof = img[Y,X]
 
     return X, Y, prof
-
-
 
 def recadrage(path_dict : str):
 
