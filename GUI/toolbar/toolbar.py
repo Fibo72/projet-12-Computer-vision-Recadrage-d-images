@@ -43,7 +43,7 @@ class Toolbar(tk.Frame):
         self.manager = SaveLoadHandler(self)
 
         self.file_button.add_commands(["Nouvelle image", "Nouveau set", "Sauver le projet", "Charger un projet"],
-                                       [print("à virer"), self.manager.load_set, self.manager.save_project, self.manager.load_project])
+                                       [lambda : print("à virer"), self.manager.load_set, self.manager.save_project, self.manager.load_project])
         
         self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
                                        [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
@@ -149,9 +149,3 @@ class Toolbar(tk.Frame):
     def enable_them_all(self, button_list):
         for button in button_list:
             button.config(state='normal')
-    
-    def save_points(self):
-        print(self.workspace.points)
-    
-    def open_file(self):
-        print("to implement")

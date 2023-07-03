@@ -33,7 +33,6 @@ class RecadrageMenu(tk.Toplevel):
         if int(self.var.get()) == 1:
             self.toolbar.workspace.ref_image = 0
             self.destroy()
-            print('destroyed')
             self.toolbar.computer.compute()
 
         else:
@@ -46,7 +45,6 @@ class RecadrageMenu(tk.Toplevel):
                     showinfo("Erreur de donnée", "Entrez un nombre valide.")
                 else :
                     self.toolbar.workspace.ref_image = nb - 1
-                    print(nb)
                     self.destroy()
                     self.toolbar.computer.compute()
 

@@ -110,7 +110,7 @@ def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, 
 
     with open(f"{path + '/' + name}", 'wb') as file:
         file.seek(0)
-        print(header['header_size'])
+        # print(header['header_size'])
         for i in range(header['header_size']):
             file.write((0x00).to_bytes(1, "big"))
         
@@ -350,13 +350,13 @@ def recadrage(path_dict : str):
 
 
             s, R, t = recadrage_cpd(x_i_augm, x0_augm)
-            print(f"s = {s}, R = {R}, t = {t}")
+            # print(f"s = {s}, R = {R}, t = {t}")
             
             img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
 
             img_intensity_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
             
-            print(img_intensity_recadr_i[img_intensity_recadr_i < 0])
+            # print(img_intensity_recadr_i[img_intensity_recadr_i < 0])
             encode(header = header_i, 
                    intensity_img = img_intensity_recadr_i, org_intensity = np.array([0,0]), 
                    phase_img = img_phase_recadr_i, org_phase = np.array([0,0]),

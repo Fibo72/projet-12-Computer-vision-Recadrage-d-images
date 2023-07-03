@@ -36,8 +36,8 @@ class App:
         self.workspace.display_elements()
 
         #SHORCUTS BINDING
-        self.master.bind("<Control-o>",self.toolbar.open_file)
-        self.master.bind("<Control-s>",self.toolbar.save_points)
+        self.master.bind("<Control-o>",self.toolbar.manager.load_project) #type : ignore
+        self.master.bind("<Control-s>",self.toolbar.manager.save_project) #type : ignore
 
         self.master.bind("<Control-=>", self.workspace.sidebar.zoom_in)
         self.master.bind("<Control-Shift-+>", self.workspace.sidebar.zoom_out)
