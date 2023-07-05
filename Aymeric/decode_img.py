@@ -100,8 +100,22 @@ def decod_intensity_img(header: dict) ->np.ndarray:
     pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['ac_height'],header['ac_width'], header['ac_n_bucket'])).astype(np.uint8)
     return pic
 
-def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str):
-    """Encode the header and the picture in a .dat file"""
+def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, phase_img : np.ndarray, org_phase : np.ndarray, path: str, name: str) -> None:
+    """Generate a .dat file from the header and the pictures
+
+    Args:
+        header (dict): header of the original file
+        intensity_img (np.ndarray): new intensity data format (n,m, nb_bucket)
+        org_intensity (np.ndarray): origin of the intensity data format (3, nb_bucket)
+        phase_img (np.ndarray): new phase data format (n,m)
+        org_phase (np.ndarray): origin of the phase data format (3, 1)
+        path (str): path where .dat file will be saved
+        name (str): name of the .dat file
+
+    Returns:    
+    return (None): None
+    """
+
 
     ac_height, ac_width = intensity_img.shape[:2] #TODO : gerer les buckets
     cn_height, cn_width = phase_img.shape
@@ -163,9 +177,7 @@ def encode(header: dict, intensity_img: np.ndarray, org_intensity : np.ndarray, 
         for i in range(cn_height*cn_width):
             file.write(int(phase_img_line[i]).to_bytes(4, "big"))
 
-
-
-def convert(header, phase_img, type) -> np.ndarray:
+def convert(header : dict, phase_img : np.ndarray, type : str) -> np.ndarray:
     """Convert the phase image in meter or waves"""
     R = {
         '1': {
@@ -268,7 +280,7 @@ def generate_json(path_dict: str,  img_name: list, p1: np.ndarray, crop_number: 
     with open(path_dict, "w") as f:
         json.dump(load_dict, f, indent=4)
 
-def prof_topo(A,B, img):
+def prof_topo(A : list,B : list, img : np.ndarray) -> tuple:
 
     """Return the profile of the topography
 
@@ -294,7 +306,13 @@ def prof_topo(A,B, img):
 
     return X, Y, prof
 
-def recadrage(path_dict : str):
+def recadrage(path_dict : str) -> None:
+    """Crop all the images in the json file
+    path_dict (str): Path of the json file
+    
+    return None
+            but generate cropped image in .dat format in the out_path folder specified in the json file"""
+
 
     with open(path_dict, "r") as f:
         load_dict = json.load(f)
