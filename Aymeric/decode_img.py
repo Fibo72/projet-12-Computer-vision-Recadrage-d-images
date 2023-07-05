@@ -333,8 +333,8 @@ def recadrage(path_dict : str):
             img_phase_i = get_img(origin_path +  '/' + img_name[i], 'phase')
             img_intensity_i = get_img(origin_path +  '/' + img_name[i], 'intensity')
             
-            # org_intensity_i = get_org_img(header_i, 'intensity')
-            # org_phase_i = get_org_img(header_i, 'phase')
+            org_intensity_i = get_org_img(header_i, 'intensity')
+            org_phase_i = get_org_img(header_i, 'phase')
             
             x_i  = p1[i]
             x_i = np.array(x_i)
@@ -349,17 +349,24 @@ def recadrage(path_dict : str):
 
             
             img_phase_format_i = format_img(img_phase_i)
-            img_phase_recadr_i = apply_recadr(img_phase_format_i, s, R, t)
-            # org_phase_recadr_i = s*np.dot(R, org_phase_i) + t
-            org_phase_recadr_i = np.zeros((np.shape(org_phase_0)[0], np.shape(org_phase_0)[1], n_bucket))
+            img_phase_recadr_i, min_x_phase, min_y_phase, min_z_phase = apply_recadr(img_phase_format_i, s, R, t)
 
-
-
+            #-----------------Recadrage des origines devrait être fonctionnalisé-----------------#
+            org_phase_recadr_i = s*np.dot( org_phase_i[:,0],R) + t
+            org_phase_recadr_i -= np.array([min_x_phase, min_y_phase, min_z_phase])
+            org_phase_recadr_i[0], org_phase_recadr_i[1] = org_phase_recadr_i[1], org_phase_recadr_i[0] 
+            org_phase_recadr_i = org_phase_recadr_i[:, np.newaxis]
+            #------------------------------------------------------------------------------------#
         
             img_intensity_i_0 = format_img(img_intensity_i[:,:,0])
-            img_intensity_recadr_i_0 = apply_recadr(img_intensity_i_0, s, R, t)
-            # org_intensity_recadr_i = s*np.dot(R, org_intensity_i) + t
-            org_intensity_recadr_i = np.zeros((np.shape(org_intensity_0)[0], np.shape(org_intensity_0)[1], n_bucket))
+            img_intensity_recadr_i_0, min_x_intensity, min_y_intensity, min_z_intensity = apply_recadr(img_intensity_i_0, s, R, t)
+
+            #-----------------Recadrage des origines devrait être fonctionnalisé-----------------#
+            org_intensity_recadr_i = s*np.dot(org_intensity_i[:,0], R) + t
+            org_intensity_recadr_i -= np.array([min_x_intensity, min_y_intensity, min_z_intensity])
+            org_intensity_i[0], org_intensity_i[1] = org_intensity_i[1], org_intensity_i[0]
+            org_intensity_recadr_i = org_intensity_recadr_i[:, np.newaxis]
+            #------------------------------------------------------------------------------------#
 
             img_intensity_recadr_i = np.empty((np.shape(img_intensity_recadr_i_0)[0], np.shape(img_intensity_recadr_i_0)[1], n_bucket))
             img_intensity_recadr_i[:,:,0] = img_intensity_recadr_i_0
@@ -367,7 +374,7 @@ def recadrage(path_dict : str):
             for k in range(1, n_bucket):
 
                 img_intensity_i_k = format_img(img_intensity_i[:,:,k])
-                img_intensity_recadr_i_k = apply_recadr(img_intensity_i_k, s, R, t)
+                img_intensity_recadr_i_k = apply_recadr(img_intensity_i_k, s, R, t)[0]
                 img_intensity_recadr_i[:,:,k] = img_intensity_recadr_i_k
 
 
@@ -381,9 +388,9 @@ def recadrage(path_dict : str):
 
             # print(org_intensity_0, org_phase_0)
             encode(header_0, 
-                   img_intensity_org, org_intensity_0, 
-                   img_phase_org,  org_phase_0,
-                   out_path, img_name[crop_number])
+                   intensity_img = img_intensity_org, org_intensity = org_intensity_0, 
+                   phase_img = img_phase_org,  org_phase = org_phase_0,
+                   path = out_path, name = img_name[crop_number])
 
 
 

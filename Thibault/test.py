@@ -37,15 +37,17 @@ def recadrage_cpd(pt_fix, pt_target):
 
 def apply_recadr(img, s,R,t):
     YT = s * np.dot(img, R) + t   
-
-    YT[:,:,0] -= YT[:,:,0].min() 
-    YT[:,:,1] -= YT[:,:,1].min() 
-    YT[:,:,2] -= YT[:,:,2].min()
+    min_x = YT[:,:,0].min() 
+    min_y = YT[:,:,1].min()
+    min_z = YT[:,:,2].min()
+    YT[:,:,0] -= min_x
+    YT[:,:,1] -= min_y
+    YT[:,:,2] -= min_z
 
 
     tab = np.empty((YT[:,:,0].max().astype(int) + 1, YT[:,:,1].max().astype(int)+1))
     tab[YT[:, :, 0].astype(int), YT[:, :, 1].astype(int)] = YT[:, :, -1]
-    return tab
+    return tab, min_x, min_y, min_z
 
 
 # def thibault(img_fix, img_target, pt_fix, pt_target):
