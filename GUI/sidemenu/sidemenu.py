@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-from GUI.settings import COLOR
-
 
 style = [{"font":"Arial 13 bold", "borderwidth":3, "relief":"solid", "anchor":"center"},
          {"font":"Arial 10"}, {"font":"Arial 10"}]

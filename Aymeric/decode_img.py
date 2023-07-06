@@ -298,12 +298,12 @@ def prof_topo(A : list,B : list, img : np.ndarray) -> tuple:
     def f(x):
         return (y2-y1)/(x2-x1)*(x-x1)+y1
 
-
-    X = np.round(np.arange(x1, x2+1)).astype(int)
+    step = np.sign(x2-x1)
+    X = np.round(np.arange(x1, x2+1,step)).astype(int)
     Y = np.round(f(X)).astype(int)
-    
-    prof = img[Y,X]
 
+    prof = img[X,Y]
+    
     return X, Y, prof
 
 def recadrage(path_dict : str) -> None:

@@ -16,7 +16,7 @@ class App:
         self.toolbar.grid(row=0, column=0, columnspan=3, sticky='ew')
 
         #MAIN PART
-        self.workspace = WorkSpace(self.master, None, background="#b7b7b7")
+        self.workspace = WorkSpace(self.master, None, self.toolbar, background="#b7b7b7")
         self.workspace.grid(row=1, column=0, sticky='ns')
 
         #SIDE MENU
@@ -36,8 +36,6 @@ class App:
         self.workspace.display_elements()
 
         #SHORCUTS BINDING
-        self.master.bind("<Control-o>",self.toolbar.manager.load_project) #type : ignore
-        self.master.bind("<Control-s>",self.toolbar.manager.save_project) #type : ignore
 
         self.master.bind("<Control-=>", self.workspace.sidebar.zoom_in)
         self.master.bind("<Control-Shift-+>", self.workspace.sidebar.zoom_out)

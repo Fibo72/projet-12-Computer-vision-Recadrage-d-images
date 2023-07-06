@@ -10,7 +10,7 @@ class MyCanvas(tk.Canvas):
         self.side_menu = side_m
 
         self.ModifTool = PointsModifier(self, self.workspace)
-        self.ProfileTool = Profile(self, self.workspace)
+        self.ProfileTool = Profile(self, self.workspace, self.workspace.toolbar)
 
         self.drag_on = False
 

@@ -10,18 +10,19 @@ class SideBar(tk.Frame):
     def __init__(self, workspace, side_m, master, **kwargs):
         super().__init__(workspace, **kwargs)
         self.workspace = workspace
+        self.toolbar = workspace
         self.canvas = None
         self.master = master
         self.side_menu = side_m
 
-        self.a = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/draw.png"))
-        self.b = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/drag.png"))
-        self.c = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/zoom_in.png"))
-        self.d = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/zoom_out.png"))
-        self.e = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/reset.png"))
-        self.f = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/clear.png"))
-        self.g = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/profil.png"))
-        self.h = ImageTk.PhotoImage(Image.open("GUI/workspace/ressources/modif.png"))
+        self.a = ImageTk.PhotoImage(Image.open("GUI/ressources/draw.png"))
+        self.b = ImageTk.PhotoImage(Image.open("GUI/ressources/drag.png"))
+        self.c = ImageTk.PhotoImage(Image.open("GUI/ressources/zoom_in.png"))
+        self.d = ImageTk.PhotoImage(Image.open("GUI/ressources/zoom_out.png"))
+        self.e = ImageTk.PhotoImage(Image.open("GUI/ressources/reset.png"))
+        self.f = ImageTk.PhotoImage(Image.open("GUI/ressources/clear.png"))
+        self.g = ImageTk.PhotoImage(Image.open("GUI/ressources/profil.png"))
+        self.h = ImageTk.PhotoImage(Image.open("GUI/ressources/modif.png"))
 
         style = ttk.Style()
         style.configure('TButton', background = '#b7b7b7', borderwidth=0)
@@ -42,6 +43,7 @@ class SideBar(tk.Frame):
     
     def update_canvas(self, canvas):
         self.canvas = canvas
+        self.toolbar = self.workspace.toolbar
 
     def link_side_menu(self, side_m):
         self.side_menu = side_m
@@ -55,6 +57,8 @@ class SideBar(tk.Frame):
                 self.canvas.ProfileTool.points = [] # type: ignore
             self.master.config(cursor="arrow") # type: ignore
             self.workspace.mode = "DRAW"
+            self.toolbar.toggle_profile("disabled")
+            
 
     def clear_points(self, event=None):
         if askyesno("Attention","Etes-vous sûr(e) de vouloir supprimer tous les points ?"):
@@ -68,9 +72,7 @@ class SideBar(tk.Frame):
             self.workspace.mode = "BLANK"
         else:
             if self.workspace.mode == "PROFILE":
-                pass
-                #self.workspace.draw_image()
-                #self.canvas.ProfileTool.points = [] # type: ignore
+                self.toolbar.toggle_profile
                 
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "DRAG"
@@ -83,6 +85,7 @@ class SideBar(tk.Frame):
             if self.workspace.mode == "PROFILE":
                 self.workspace.draw_image()
                 self.canvas.ProfileTool.points = [] # type: ignore
+                self.toolbar.toggle_profile("disabled")
             self.master.config(cursor="hand2") # type: ignore
             self.workspace.mode = "MODIF"        
 

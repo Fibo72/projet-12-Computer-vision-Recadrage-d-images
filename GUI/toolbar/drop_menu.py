@@ -10,6 +10,7 @@ class DropMenu:
     def add_commands(self, labels, commands):
         for i,option in enumerate(labels):
             self.menu.add_command(label=option, command=commands[i])
+        # self.menu.entryconfigure(i, state='disabled')
 
     def show_menu(self):
         self.menu.post(self.button.winfo_rootx(), self.button.winfo_rooty() + self.button.winfo_height())

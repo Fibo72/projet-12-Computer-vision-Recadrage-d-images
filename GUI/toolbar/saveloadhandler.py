@@ -3,7 +3,7 @@ from tkinter import filedialog
 from tkinter.messagebox import showwarning, showinfo
 from tkinter.messagebox import askyesno
 from PIL import Image, ImageTk
-from GUI.settings import check_file_format, get_scale
+from GUI.settings import get_scale
 from GUI.settings import format_points
 import os
 import numpy as np
@@ -42,15 +42,17 @@ class SaveLoadHandler():
                 file_path = os.path.join(dir_path, file_name)
 
                 if os.path.isfile(file_path):
-                    name_list.append(file_name[0:-4])
 
                     if file_path.endswith('.dat'):
-                        self.workspace.name_list.append(file_name)
                         if first_image:
                             self.workspace.reinit()
                             first_image = False
-                            
-                        self.workspace.image_list.append(Image.fromarray(get_img(file_path, type="phase"), mode='L'))
+                        
+                        name_list.append(file_name[0:-4])
+                        self.workspace.name_list.append(file_name)
+                        
+                        self.workspace.image_array_list.append(get_img(file_path, type="phase"))
+                        self.workspace.image_list.append(Image.fromarray(self.workspace.image_array_list[-1], mode='L'))
                         self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
                         self.workspace.h.append(self.workspace.image_list[j].height)
                         self.workspace.w.append(self.workspace.image_list[j].width)
@@ -60,7 +62,6 @@ class SaveLoadHandler():
                     #     self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
                     #     self.workspace.h.append(self.workspace.image_list[j].height)
                     #     self.workspace.w.append(self.workspace.image_list[j].width)
-
 
                     self.workspace.points.append([])
                     self.workspace.points_objects.append([])
@@ -73,7 +74,7 @@ class SaveLoadHandler():
                 self.workspace.draw_image()
                 self.workspace.enable_button()
 
-    def save_project(self):
+    def save_project(self, event=None):
         """
         Saves a project in a JSON file among others, it will save
             - path of the images (the JSON is loded in the same folder)
@@ -90,7 +91,7 @@ class SaveLoadHandler():
 
             dict = {}
             dict["img_dict"] = img_dict
-            dict["crop_number"] = 0     #TODO : add crop number
+            dict["crop_number"] = self.workspace.ref_image
             dict["origin_path"] = self.origin_path
             dict["out_path"] = dir_path
             dict["comment"] = "comment here"
@@ -101,7 +102,7 @@ class SaveLoadHandler():
             self.toolbar.project_path = os.path.join(dir_path, "project.json")
             showinfo("Succès","Projet sauvegardé avec succès")
 
-    def load_project(self):
+    def load_project(self, event=None):
         """
         Loads a project previously saved with self.save_project
         """
@@ -117,7 +118,6 @@ class SaveLoadHandler():
             self.workspace.name_list = dict["img_dict"]["img_name"]
             self.workspace.max_points = len(self.workspace.points[0])
             self.workspace.draw_image()
-
 
     def export_project(self):
         """
