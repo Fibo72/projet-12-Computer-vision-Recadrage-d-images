@@ -42,8 +42,8 @@ class Toolbar(tk.Frame):
         self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
                                        [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
         
-        self.config_button.add_commands(["Échelles", "Color Map", "Points"], 
-                                        [lambda : print("TODO")]*2 + [self.menuHandler.createPointsMenu])
+        self.config_button.add_commands(["Points"], 
+                                        [self.menuHandler.createPointsMenu])
         
         self.calcul_button.add_commands(["Recadrage", "Profil"], 
                                         [self.menuHandler.createRecadrageMenu]+ [self.menuHandler.createProfileMenu])

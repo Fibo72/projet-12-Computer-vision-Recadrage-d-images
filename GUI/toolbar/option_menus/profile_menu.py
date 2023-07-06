@@ -60,8 +60,8 @@ class ProfileViewer(tk.Toplevel):
         
         self.ax.plot(D,Z, 'r-')
 
-        self.ax.set_xlabel("Distance (nm)")
-        self.ax.set_ylabel("Hauteur (nm)")
+        self.ax.set_xlabel("Distance")
+        self.ax.set_ylabel("Hauteur")
         self.ax.set_title("Profil topographique")
         
         self.canvas.draw()
