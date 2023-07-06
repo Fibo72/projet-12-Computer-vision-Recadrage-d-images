@@ -1,10 +1,13 @@
 
 class Profile:
-    def __init__(self, canvas, workspace):
+    def __init__(self, canvas, workspace, toolbar):
         self.canvas = canvas
         self.workspace = workspace
+        self.toolbar = toolbar
         self.points = []
+        self.coord_points = []
         self.segment = None
+        self.active_point = None
 
     def click(self, mouse_coord, mouse_off):
         x, y = mouse_coord
@@ -12,9 +15,11 @@ class Profile:
             x_off, y_off = mouse_off
             point = self.canvas.create_oval(x_off + x-5, y_off + y-5, x_off + x + 5, y_off + y+5, fill='pink', width=2)
             self.points.append(point)
+            self.coord_points.append(mouse_coord)
         if len(self.points) == 2:
             self.draw_segment()
             self.active_point = self.find_closest_point(mouse_coord, mouse_off)
+            self.toolbar.toggle_profile("normal")
 
     def move(self, coord):
         x, y = coord
@@ -23,6 +28,8 @@ class Profile:
             x_off, y_off = self.canvas.canvasx(0), self.canvas.canvasy(0)
             self.canvas.coords(self.active_point, x+x_off-3, y+y_off-3, x+x_off+3, y+y_off+3)
             self.draw_segment()
+
+            self.points[self.active_point] = coord
 
 
     def release_point(self):
@@ -37,6 +44,8 @@ class Profile:
                 x3, y3, _, _ = self.canvas.coords(self.points[1])
             except:
                 self.points=[]
+                self.coord_points=[]
+                self.toolbar.toggle_profile("disabled")
                 self.draw_segment()
             else:
                 self.segment = self.canvas.create_line(x1+5, y1+5, x3+5, y3+5, fill='pink', width=2)
@@ -58,20 +67,12 @@ class Profile:
                 self.point_number = i
         return closest_point
 
-    def process(self):
-        try :
-            point1 = (self.canvas.coords(self.points[0])[0] + 5, self.canvas.coords(self.points[0])[1] + 5)
-            point2 = (self.canvas.coords(self.points[1])[0] + 5, self.canvas.coords(self.points[1])[1] + 5)
-        except:
-            print("Pas assez de points")
-        else:
-            print(point1, point2) #format : (j, i) = (colonne, ligne)
-
     def reset(self):
         for _i in range(len(self.points)):
             point_to_delete = self.points.pop(_i)
             self.canvas.delete(point_to_delete)
         if self.segment is not None:
             self.canvas.delete(self.segment)
+        self.coord_points = []
         self.segment = None
         self.active_point = None

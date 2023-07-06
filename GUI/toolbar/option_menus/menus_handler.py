@@ -1,7 +1,6 @@
-import tkinter as tk
-
 from GUI.toolbar.option_menus.points_menu import PointsMenu
 from GUI.toolbar.option_menus.recadrage_menu import RecadrageMenu
+from GUI.toolbar.option_menus.profile_menu import ProfileViewer
 
 class MenusHandler():
     def __init__(self, master, toolbar) -> None:
@@ -13,4 +12,7 @@ class MenusHandler():
     
     def createRecadrageMenu(self):
         RecadrageMenu(self.master, self.toolbar)
+    
+    def createProfileMenu(self):
+        ProfileViewer(self.master, self.toolbar)
     

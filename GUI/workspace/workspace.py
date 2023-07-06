@@ -5,9 +5,10 @@ from GUI.workspace.canvas import MyCanvas
 from GUI.workspace.sidebar import SideBar
 
 class WorkSpace(tk.Frame):
-    def __init__(self, master, side_m, **kwargs):
+    def __init__(self, master, side_m, toolbar, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
+        self.toolbar = toolbar
         self.reinit()
         self.mode = "BLANK"
         
@@ -23,6 +24,7 @@ class WorkSpace(tk.Frame):
 
     def reinit(self):
         self.image_list = []
+        self.image_array_list = []
         self.image_tk_list = []
         self.name_list = []
         self.current = 0

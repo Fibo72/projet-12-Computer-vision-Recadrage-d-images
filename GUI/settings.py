@@ -19,7 +19,7 @@ def configure(master: tk.Tk):
     master.configure(bg="#dddddd")
     master.state("zoomed")
     master.title("REFrame")
-    icon = tk.PhotoImage(file='GUI/picture/logo.png')
+    icon = tk.PhotoImage(file='GUI/ressources/logo.png')
     master.iconphoto(True, icon)
 
 def style_them_all(button_list):

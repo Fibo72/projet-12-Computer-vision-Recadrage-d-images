@@ -1,10 +1,4 @@
 import tkinter as tk
-from tkinter import filedialog
-from Aymeric.decode_img import get_img
-
-from PIL import Image, ImageTk
-
-import os
 
 from GUI.settings import *
 from GUI.toolbar.option_menus.menus_handler import MenusHandler
@@ -42,8 +36,8 @@ class Toolbar(tk.Frame):
         self.side_m = side_m
         self.manager = SaveLoadHandler(self)
 
-        self.file_button.add_commands(["Nouvelle image", "Nouveau set", "Sauver le projet", "Charger un projet"],
-                                       [lambda : print("à virer"), self.manager.load_set, self.manager.save_project, self.manager.load_project])
+        self.file_button.add_commands(["Nouveau set", "Sauver le projet", "Charger un projet"],
+                                       [self.manager.load_set, self.manager.save_project, self.manager.load_project])
         
         self.edit_button.add_commands(["Annuler (Ctrl + Z)", "Réinitialiser"], #TODO : bind CTRL + Y
                                        [self.workspace.canvas.remove_last,  self.workspace.sidebar.clear_points])
@@ -52,99 +46,17 @@ class Toolbar(tk.Frame):
                                         [lambda : print("TODO")]*2 + [self.menuHandler.createPointsMenu])
         
         self.calcul_button.add_commands(["Recadrage", "Profil"], 
-                                        [self.menuHandler.createRecadrageMenu]+ [lambda : print("TODO")])
+                                        [self.menuHandler.createRecadrageMenu]+ [self.menuHandler.createProfileMenu])
+        self.calcul_button.menu.entryconfig(1, state="disabled")
+
+        self.toggle_profile("disabled")
+        self.master.bind("<Control-o>",self.manager.load_project)
+        self.master.bind("<Control-s>",self.manager.save_project)
 
 
-    # def load_image(self):
-    #     """
-    #     useful for testing, useless for common use
-    #     """
-    #     try :
-    #         file_path = filedialog.askopenfilename(filetypes=[("DAT files", "*.dat")])
-    #     except:
-    #         pass
-    #     else:
-    #         # Load image
-    #         image_to_display = False
-
-    #         if file_path.endswith('.dat'):
-    #             self.workspace.reinit()
-    #             self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path)*255, mode='L'))
-    #             #TODO: add a line to store the in-meter image
-    #             self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
-    #             self.workspace.h.append(self.workspace.image_list[0].height)
-    #             self.workspace.w.append(self.workspace.image_list[0].width)
-
-    #             image_to_display = True
-
-
-    #         elif check_file_format(file_path):
-    #             self.workspace.reinit()
-
-    #             self.workspace.image_list.append(Image.open(file_path))
-    #             self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[0]))
-    #             self.workspace.h.append(self.workspace.image_list[0].height)
-    #             self.workspace.w.append(self.workspace.image_list[0].width)
-
-    #             image_to_display = True
-
-    #         if image_to_display:
-    #             self.workspace.points.append([])
-    #             self.workspace.points_objects.append([])
-
-
-    #             self.workspace.scale = get_scale(self.workspace.h, self.workspace.w, 
-    #                                              self.workspace.canvas.winfo_height(), 
-    #                                              self.workspace.canvas.winfo_width())
-    #             self.side_m.update_list([file_path.split('/')[-1][0:-4]])
-    #             self.workspace.draw_image()
-    #             self.workspace.enable_button()
-    
-    # def load_set(self):
-    #     try:
-    #         dir_path = filedialog.askdirectory()
-    #     except:
-    #         pass
-    #     else:
-    #         name_list = []
-    #         first_image = True
-    #         for j,file_name in enumerate(os.listdir(dir_path)):
-                
-
-    #             file_path = os.path.join(dir_path, file_name)
-
-    #             if os.path.isfile(file_path):
-    #                 name_list.append(file_name[0:-4])
-
-    #                 if first_image:
-    #                     self.workspace.reinit()
-    #                     first_image = False
-
-    #                 if file_path.endswith('.dat'):
-    #                     self.workspace.image_list.append(Image.fromarray(get_phase_img(file_path), mode='L'))
-    #                     self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[-1]))
-    #                     self.workspace.h.append(self.workspace.image_list[j].height)
-    #                     self.workspace.w.append(self.workspace.image_list[j].width)
-    #                     #self.workspace.offset.append([0,0])
-
-    #                 elif check_file_format(file_path):
-    #                     self.workspace.image_list.append(Image.open(file_path))
-    #                     self.workspace.image_tk_list.append(ImageTk.PhotoImage(self.workspace.image_list[j]))
-    #                     self.workspace.h.append(self.workspace.image_list[j].height)
-    #                     self.workspace.w.append(self.workspace.image_list[j].width)
-    #                     #self.workspace.offset.append([0,0])
-
-
-    #                 self.workspace.points.append([])
-    #                 self.workspace.points_objects.append([])
-            
-    #         if not(first_image):
-    #             self.side_m.update_list(name_list)
-    #             self.workspace.scale = get_scale(self.workspace.h, self.workspace.w,
-    #                                             self.workspace.canvas.winfo_height(),
-    #                                             self.workspace.canvas.winfo_width())
-    #             self.workspace.draw_image()
-    #             self.workspace.enable_button()
+    def toggle_profile(self, state):
+        self.calcul_button.menu.entryconfig(1, state=state)
+        
 
     def enable_them_all(self, button_list):
         for button in button_list:
