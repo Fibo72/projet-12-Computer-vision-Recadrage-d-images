@@ -1,4 +1,4 @@
-# from Thibault.test import recadrage_cpd, format_img, apply_recadr
+from Thibault.test import recadrage_cpd, format_img, apply_recadr
 import struct
 import numpy as np
 import matplotlib.pyplot as plt
@@ -413,7 +413,7 @@ def recadrage(path_dict : str) -> None:
 
 
 if (__name__ == '__main__'):
-    img = get_img('data\CALSPAR16C_init-to-d7\CALSPAR16C_d1_image1-5x.dat', 'phase')
+    img = get_img('data//CALSPAR16C_init-to-d7//CALSPAR16C_d1_image1-5x.dat', 'phase')
     plt.figure()
     plt.imshow(img)
     plt.show()
