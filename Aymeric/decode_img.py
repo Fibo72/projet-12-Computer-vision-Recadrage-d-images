@@ -198,7 +198,7 @@ def convert(header : dict, phase_img : np.ndarray, type : str) -> np.ndarray:
     if (type == 'waves'):
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] / R[str(header['header_format'])][str(header['phase_res'])]
     elif (type == 'meter'):
-        return (phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in']) / (R[str(header['header_format'])])[str(header['phase_res'])]
+        return (phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in']) / (R[str(header['header_format'])][str(header['phase_res'])])
     else:
         raise Exception('Type must be waves or meter')
 
