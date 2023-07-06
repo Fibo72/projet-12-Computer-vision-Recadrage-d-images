@@ -49,7 +49,6 @@ def header_reader(path: str) -> dict:
 
     return header
 
-
 def decod_phase_img(header: dict) ->np.ndarray:
     """Take the header of data and return a picture in meter
 
@@ -67,10 +66,11 @@ def decod_phase_img(header: dict) ->np.ndarray:
         if (abs(val) < 0x7FFFFFF8):
             img.append(val)
         else :
-            img.append(4)
+            img.append(0)
 
     img = np.array(img)
-    img_threshold = (img-np.min(img))
+    img_threshold = img - np.min(img)*(img != 0)
+
     pic = np.reshape(img_threshold*255/np.max(img_threshold), (header['cn_height'],header['cn_width'])).astype(np.uint8)
     return pic
 
@@ -198,7 +198,7 @@ def convert(header : dict, phase_img : np.ndarray, type : str) -> np.ndarray:
     if (type == 'waves'):
         return phase_img * header['intf_scale_factor']* header['obliquity_factor'] / R[str(header['header_format'])][str(header['phase_res'])]
     elif (type == 'meter'):
-        return phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in'] / (R[str(header['header_format'])])[str(header['phase_res'])]
+        return (phase_img * header['intf_scale_factor']* header['obliquity_factor'] * header['wavelength_in']) / (R[str(header['header_format'])][str(header['phase_res'])])
     else:
         raise Exception('Type must be waves or meter')
 
@@ -412,8 +412,10 @@ def recadrage(path_dict : str) -> None:
 
 
 
-
-
 if (__name__ == '__main__'):
-    get_img('data//CALSPAR15C_init-to-d7//CALSPAR15C_d2_image1-5x.dat', 'phase')
-        
+    img = get_img('data//CALSPAR16C_init-to-d7//CALSPAR16C_d1_image1-5x.dat', 'phase')
+    plt.figure()
+    plt.imshow(img)
+    plt.show()
+    pass
+    

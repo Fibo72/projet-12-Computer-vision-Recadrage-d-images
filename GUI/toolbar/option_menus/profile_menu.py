@@ -52,7 +52,7 @@ class ProfileViewer(tk.Toplevel):
     def display_graph(self):
         self.ax.clear()
         X,Y,Z = prof_topo(self.point_1, self.point_2, self.toolbar.workspace.image_array_list[self.toolbar.workspace.current])
-        
+
         X_arr = np.array(X)
         Y_arr = np.array(Y)
 

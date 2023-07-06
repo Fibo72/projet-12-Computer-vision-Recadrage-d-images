@@ -50,6 +50,8 @@ def recadrage_cpd(pt_fix : np.ndarray, pt_target : np.ndarray) -> tuple:
     return s, R, t
 
 def apply_recadr(img : np.ndarray, s : float, R : np.ndarray, t: np.ndarray) -> tuple:
+
+
     """effectue le recadrage de l'image par la transformation rigide fournie
 
     Args:
